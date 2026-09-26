@@ -20,10 +20,12 @@ Sesi ini kemungkinan dijalankan dari WSL lokal, mengeksekusi perintah ke VPS lew
   ```
 - Untuk perubahan multi-baris/skrip, buat file lokal dulu, `scp` ke VPS, baru dieksekusi sekali — jangan kirim banyak perintah kecil bolak-balik.
 - Jangan asumsikan direktori kerja tetap sama dari command sebelumnya kecuali di-`cd` ulang secara eksplisit dalam invocation yang sama.
+- `sudo` di VPS meminta password, jadi tidak bisa dijalankan dari sesi non-interaktif. Untuk langkah yang butuh `sudo`, siapkan skripnya lalu minta anggota menjalankannya sendiri dengan `ssh -t csirt-vps '...'`.
+- Kalau alias SSH memakai multiplexing (`ControlMaster`/`ControlPersist`), sesi baru menumpang koneksi lama — perubahan grup/akun di VPS belum terlihat. Pakai `ssh -o ControlPath=none csirt-vps ...` untuk koneksi segar.
 
 ## Aturan Keamanan (TIDAK BOLEH DILANGGAR TANPA KONFIRMASI EKSPLISIT)
 
-1. **Jangan pernah** menjalankan perintah sebagai `root` atau `sudo su -`. Gunakan user `deploy` dan sudo terbatas.
+1. **Jangan pernah** menjalankan perintah sebagai `root` atau `sudo su -`. Sesi Claude Code memakai akun layanan `deploy` (alias `csirt-vps`) hanya untuk operasi deployment — `git pull`, `docker`/`docker compose`; administrasi sistem yang butuh `sudo` dilakukan anggota lewat akun pribadinya (lihat `docs/GUIDELINES.md` § 4).
 2. **Jangan** mengubah `/etc/ssh/sshd_config`, aturan UFW, atau konfigurasi firewall lain tanpa menjelaskan dulu perubahannya dan menunggu konfirmasi.
 3. **Jangan** commit file `.env`, kredensial, private key, atau secrets apa pun. Gunakan `.env.example` sebagai template.
 4. **Jangan** menjalankan `docker compose down`/restart pada `apps/ctfd` di jam-jam kompetisi berlangsung tanpa konfirmasi eksplisit — downtime di sini berdampak langsung ke peserta lomba.
@@ -44,6 +46,7 @@ Sesi ini kemungkinan dijalankan dari WSL lokal, mengeksekusi perintah ke VPS lew
 
 ## Yang Masih Perlu Dilengkapi
 
-- Tech stack final tiap sub-aplikasi (lihat `[ISI DI SINI]` di `docs/PRD.md`)
+- Struktur repo aplikasi Laravel (monorepo vs repo per app) & konfigurasi panel Filament — tech stack sudah final di `docs/PRD.md` § 4.1–4.2
+- Akun SSH pribadi anggota inti di VPS (GUIDELINES § 4) — belum dibuat; setelah ada, keluarkan `deploy` dari grup `sudo`
 - Strategi backup & rollback untuk `apps/ctfd` sebelum event besar
 - CI/CD (saat ini deployment manual via `git pull` + `docker compose up -d` di VPS)

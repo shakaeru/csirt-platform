@@ -24,28 +24,93 @@
 
 ## 2. Topologi Docker
 
+Mengikuti PRD § 4.3 ("CTFd ... dengan Docker network sendiri — jangan share database atau app server yang sama"), tiap aplikasi punya network sendiri. **Nginx adalah satu-satunya container yang join ke lebih dari satu network.**
+
 ```
-                        ┌─────────────────────┐
-   Internet ──443/80──▶ │  nginx (infra/)      │  (reverse proxy + TLS termination)
-                        └─────────┬────────────┘
-                                  │ docker network: csirt-edge (bridge, external)
-             ┌────────────────────┼────────────────────┐
-             ▼                    ▼                     ▼
-      apps/website          apps/elearning         apps/ctfd
-      (container)           (container)            (containers: web, db, redis)
+                           Internet
+                              │  80/443 - hanya nginx yang publish port ke host
+                              ▼
+    ┌────────────────────────────────────────────────────┐
+    │                   nginx (infra/)                   │  reverse proxy + TLS termination
+    └──────┬──────────────────┬──────────────────┬───────┘
+           │                  │                  │
+      net-website       net-elearning        net-ctfd
+           ▼                  ▼                  ▼
+    ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
+    │   website    │   │  elearning   │   │     ctfd     │
+    └──────┬───────┘   └──────┬───────┘   └──────┬───────┘
+           │ internal         │ internal         │ internal
+           ▼                  ▼                  ▼
+    ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
+    │      db      │   │  db + redis  │   │  db + redis  │
+    └──────────────┘   └──────────────┘   └──────────────┘
 ```
 
-- Satu Docker network eksternal bersama (`csirt-edge`) supaya container Nginx bisa menjangkau ketiga aplikasi lewat DNS internal Docker (nama service), tanpa expose port aplikasi langsung ke publik.
-- Tiap `apps/*` punya `docker-compose.yml` sendiri, tapi join ke network yang sama:
-  ```yaml
-  networks:
-    csirt-edge:
-      external: true
-  ```
-- Buat network sekali di VPS:
-  ```bash
-  docker network create csirt-edge
-  ```
+`internal` = network privat milik compose project masing-masing (`internal: true`), tidak di-join Nginx.
+
+| Dari ↓ / Ke → | website | elearning | ctfd | db/redis |
+|---|---|---|---|---|
+| nginx | ✅ | ✅ | ✅ | ❌ |
+| website | — | ❌ | ❌ | hanya miliknya |
+| elearning | ❌ | — | ❌ | hanya miliknya |
+| ctfd | ❌ | ❌ | — | hanya miliknya |
+
+### Aturan
+
+1. **Hanya Nginx yang boleh punya `ports:`.** Container aplikasi tidak boleh publish port ke host — kalau publish, container lain bisa menjangkaunya lewat IP host dan isolasi network jadi tidak berarti.
+2. **db/redis hanya join network `internal` project-nya**, tidak pernah join `net-*`.
+3. **Nama service yang dipakai `proxy_pass` harus unik lintas aplikasi** (`website`, `elearning`, `ctfd`). Kalau dua aplikasi sama-sama pakai nama `app`, DNS Docker di container Nginx bisa me-resolve ke container yang salah.
+4. **Nginx me-resolve upstream saat request, bukan saat start** (`resolver 127.0.0.11` + variabel di `proxy_pass`, lihat § 4). Tanpa ini Nginx gagal start kalau salah satu aplikasi mati — website yang down bisa ikut menjatuhkan CTFd, kebalikan dari tujuan isolasi.
+
+### Setup
+
+Buat network sekali di VPS:
+```bash
+docker network create net-website
+docker network create net-elearning
+docker network create net-ctfd
+```
+
+`infra/docker-compose.yml`:
+```yaml
+services:
+  nginx:
+    image: nginx:stable-alpine   # pin ke versi spesifik saat implementasi
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/snippets:/etc/nginx/snippets:ro
+    networks: [net-website, net-elearning, net-ctfd]
+    restart: unless-stopped
+
+networks:
+  net-website:   { external: true }
+  net-elearning: { external: true }
+  net-ctfd:      { external: true }
+```
+
+Pola `apps/ctfd/docker-compose.yml` (website & elearning sama, dengan `net-*` masing-masing):
+```yaml
+services:
+  ctfd:                         # nama ini yang dipakai proxy_pass
+    networks: [net-ctfd, internal]
+  db:
+    networks: [internal]
+  redis:
+    networks: [internal]
+
+networks:
+  net-ctfd: { external: true }
+  internal: { internal: true }  # jadi <project>_internal, tanpa akses keluar
+```
+
+### Risiko yang tersisa
+
+- **Nginx tetap titik bersama.** Config error di `website.conf` yang di-reload bisa menjatuhkan ketiga subdomain. Selalu `nginx -t` sebelum reload; perlakukan restart Nginx saat lomba sama seperti restart `apps/ctfd`.
+- **Kalau Nginx dikompromi**, penyerang bisa menjangkau ketiga aplikasi (tapi tidak db/redis-nya).
+- **Isolasi ini level network, bukan resource.** Ketiga aplikasi tetap berbagi CPU/RAM/disk VPS. PRD menyebut "idealnya VPS terpisah" — pertimbangkan `mem_limit`/`cpus` untuk website & elearning menjelang lomba.
 
 ## 3. DNS yang Dibutuhkan
 
@@ -100,9 +165,13 @@ server {
 
     client_max_body_size 50M;   # CTFd sering upload file challenge berukuran besar
 
+    # Resolve saat request lewat DNS internal Docker, bukan saat start (§ 2 aturan 4)
+    resolver 127.0.0.11 valid=10s ipv6=off;
+    set $upstream_ctfd http://ctfd:8000;   # nama service di docker-compose apps/ctfd
+
     location / {
         include /etc/nginx/snippets/proxy-headers.conf;
-        proxy_pass http://ctfd:8000;   # nama service di docker-compose apps/ctfd
+        proxy_pass $upstream_ctfd;
     }
 }
 ```
