@@ -1,0 +1,27 @@
+# Reverse proxy bersama — lihat docs/ARCHITECTURE.md § 2 dan § 4.
+# Satu-satunya service yang boleh publish port ke host dan join ke network ketiga aplikasi.
+name: csirt-infra
+
+services:
+  nginx:
+    image: nginx:1.30-alpine        # cabang stable; naikkan versi secara sadar
+    ports:
+      - "80:80"
+      # - "443:443"                 # aktifkan bersama blok TLS (ARCHITECTURE § 5)
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/snippets:/etc/nginx/snippets:ro
+      - ./certbot/www:/var/www/certbot:ro
+    networks:
+      - net-website
+      - net-elearning
+      - net-ctfd
+    restart: unless-stopped
+
+networks:
+  net-website:
+    external: true
+  net-elearning:
+    external: true
+  net-ctfd:
+    external: true
