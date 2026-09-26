@@ -54,7 +54,7 @@ Efisiensi Sumber Daya: Mengoptimalkan satu VPS (Virtual Private Server) untuk me
   - [x] Berita/kegiatan (bisa jadi mini-CMS: kategori, tag, pencarian) (PR #15)
   - [ ] Kontak/formulir pendaftaran anggota (dengan validasi Laravel Form Request + notifikasi email ke pengurus)
   - [x] Galeri dokumentasi kegiatan (PR #17)
-  - [ ] Halaman prestasi/achievement (khususnya untuk menunjukkan hasil CTF — menghubungkan sub-proyek 4.1 dan 4.3)
+  - [x] Halaman prestasi/achievement (khususnya untuk menunjukkan hasil CTF — menghubungkan sub-proyek 4.1 dan 4.3) (PR #18)
 - **Fitur lanjutan (nice-to-have):**
   - Integrasi feed media sosial (Instagram Graph API)
   - Newsletter/mailing list (Laravel Notifications + queue)

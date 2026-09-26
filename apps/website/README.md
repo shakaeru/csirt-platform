@@ -51,6 +51,7 @@ Tanpa `npm run dev`, halaman memakai hasil `npm run build` terakhir.
 | Struktur Organisasi | http://localhost:8000/struktur-organisasi |
 | Berita & Kegiatan | http://localhost:8000/berita |
 | Galeri | http://localhost:8000/galeri |
+| Prestasi | http://localhost:8000/prestasi |
 | Panel admin | http://localhost:8000/admin |
 
 ## Akun admin
@@ -88,6 +89,18 @@ Menghapus semua album contoh (termasuk folder fotonya):
 
 ```bash
 php artisan tinker --execute="App\Models\Album::where('slug', 'like', 'contoh-%')->get()->each->delete();"
+```
+
+**Prestasi** — 5 prestasi terbit (2 tahun) + 1 draft, nama kompetisi "Contoh: …" dengan nama tim/anggota fiktif. Satu prestasi tertaut ke tulisan contoh bila data contoh Berita sudah ada:
+
+```bash
+php artisan db:seed --class=DemoAchievementSeeder
+```
+
+Menghapus semua prestasi contoh (termasuk fotonya):
+
+```bash
+php artisan tinker --execute="App\Models\Achievement::where('competition', 'like', 'Contoh:%')->get()->each->delete();"
 ```
 
 **Struktur Organisasi** — impor dari file daftar pengurus (file dan foto disimpan di luar repo, jangan di-commit):
