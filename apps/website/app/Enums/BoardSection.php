@@ -10,6 +10,7 @@ use Filament\Support\Contracts\HasLabel;
 enum BoardSection: string implements HasLabel
 {
     case Pembina = 'pembina';
+    case Presidium = 'presidium';
     case Inti = 'inti';
     case Divisi = 'divisi';
 
@@ -17,6 +18,7 @@ enum BoardSection: string implements HasLabel
     {
         return match ($this) {
             self::Pembina => 'Pembina',
+            self::Presidium => 'Presidium',
             self::Inti => 'Pengurus Inti',
             self::Divisi => 'Divisi',
         };

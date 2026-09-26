@@ -36,6 +36,11 @@ class BoardMemberFactory extends Factory
         return $this->state(fn (): array => ['section' => BoardSection::Pembina, 'position' => 'Pembina']);
     }
 
+    public function presidium(): static
+    {
+        return $this->state(fn (): array => ['section' => BoardSection::Presidium, 'position' => 'Ketua Presidium']);
+    }
+
     public function inDivision(?Division $division = null): static
     {
         return $this->state(fn (): array => [

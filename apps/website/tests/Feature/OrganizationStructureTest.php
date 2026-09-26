@@ -39,6 +39,7 @@ class OrganizationStructureTest extends TestCase
         BoardMember::factory()->for($period, 'period')->create(['name' => 'Sari Sekretaris', 'position' => 'Sekretaris', 'sort_order' => 2]);
         BoardMember::factory()->for($period, 'period')->create(['name' => 'Kiki Ketua', 'position' => 'Ketua Umum', 'sort_order' => 1]);
         BoardMember::factory()->for($period, 'period')->pembina()->create(['name' => 'Pak Pembina']);
+        BoardMember::factory()->for($period, 'period')->presidium()->create(['name' => 'Putri Presidium']);
         BoardMember::factory()->create(['name' => 'Orang Periode Lama']);
 
         $this->get('/struktur-organisasi')
@@ -46,6 +47,7 @@ class OrganizationStructureTest extends TestCase
             ->assertSee('Kepengurusan periode 2026/2027')
             ->assertSeeInOrder([
                 'Pembina', 'Pak Pembina',
+                'Presidium', 'Putri Presidium',
                 'Pengurus Inti', 'Kiki Ketua', 'Sari Sekretaris',
                 'Divisi Forensik', 'Fajar Forensik',
                 'Divisi Web', 'Wulan Web',

@@ -10,13 +10,13 @@
         </div>
     </section>
 
-    @if ($pembina->isEmpty() && $inti->isEmpty() && $divisions->isEmpty())
+    @if ($groups->every->isEmpty() && $divisions->isEmpty())
         <section class="mx-auto max-w-screen-xl px-4 py-16 text-center">
             <p class="text-csirt-neutral-600">Struktur organisasi sedang diperbarui. Silakan kembali lagi nanti.</p>
         </section>
     @else
         <div class="mx-auto max-w-screen-xl space-y-16 px-4 py-12 lg:py-16">
-            @foreach (['Pembina' => $pembina, 'Pengurus Inti' => $inti] as $heading => $members)
+            @foreach ($groups as $heading => $members)
                 @if ($members->isNotEmpty())
                     <section aria-labelledby="{{ Str::slug($heading) }}">
                         <h2 id="{{ Str::slug($heading) }}" class="mb-8 text-center text-2xl font-bold text-csirt-navy">{{ $heading }}</h2>

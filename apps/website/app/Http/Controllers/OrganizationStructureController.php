@@ -24,8 +24,13 @@ class OrganizationStructureController extends Controller
 
         return view('struktur-organisasi', [
             'period' => $period,
-            'pembina' => $members->where('section', BoardSection::Pembina)->values(),
-            'inti' => $members->where('section', BoardSection::Inti)->values(),
+            // Bagian non-divisi (Pembina, Presidium, Pengurus Inti) sesuai urutan case enum:
+            // ['Pembina' => Collection<BoardMember>, ...]. Bagian baru di enum otomatis ikut tampil.
+            'groups' => collect(BoardSection::cases())
+                ->reject(fn (BoardSection $section): bool => $section === BoardSection::Divisi)
+                ->mapWithKeys(fn (BoardSection $section): array => [
+                    $section->getLabel() => $members->where('section', $section)->values(),
+                ]),
             // [['division' => Division, 'members' => Collection<BoardMember>], ...] — hanya divisi yang punya anggota.
             'divisions' => $members->where('section', BoardSection::Divisi)
                 ->groupBy('division_id')
