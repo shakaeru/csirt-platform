@@ -4,10 +4,9 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
+// Pendaftaran akun publik (/register) sengaja ditutup — akun dibuat operator, mis.
+// `php artisan admin:create`. Formulir pendaftaran anggota UKM (PRD § 4.1) bukan akun login.
 Route::middleware('guest')->group(function () {
-    Volt::route('register', 'pages.auth.register')
-        ->name('register');
-
     Volt::route('login', 'pages.auth.login')
         ->name('login');
 

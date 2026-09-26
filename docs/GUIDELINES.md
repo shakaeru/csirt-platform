@@ -53,12 +53,12 @@ Kode dan dokumen **selalu** ditulis/diedit dari WSL lalu di-push ke Git remote (
 
 Berdasarkan tabel stakeholder di `docs/PRD.md`, berikut pemetaan awal ke akses teknis — **konfirmasi ulang di rapat tim**, terutama kolom akses SSH dan approval, karena PRD hanya mendefinisikan tanggung jawab fungsional, bukan level akses infrastruktur:
 
-| Peran (PRD) | Nama/Jabatan | Level Akses SSH | Scope | Approval `apps/ctfd`? |
-|---|---|---|---|---|
-| Technical Lead | Shafwan Khairullah | Penuh (`sudo`) | Seluruh VPS (infrastruktur, keamanan, deployment) | Ya — approver utama, semua perubahan `apps/ctfd` |
-| Content Lead | Hasbi Ray Chaibir | Terbatas (`apps/website`) + **`sudo` sebagai PIC cadangan insiden** | `apps/website`, plus akses darurat ke seluruh VPS saat Technical Lead berhalangan | Tidak relevan untuk operasional harian |
-| E-Learning Lead | Abiyu Nayaka | Terbatas | `apps/elearning` saja | Tidak relevan |
-| CTF Event Lead | Michael Louis Dalen | **Tidak ada akses SSH** — hanya akses panel admin CTFd | Konten challenge via panel admin CTFd | Tidak relevan (tidak menyentuh server) |
+| Peran (PRD) | Nama/Jabatan | Level Akses SSH | Scope | Approval `apps/ctfd`? | Panel admin website (`/admin`) |
+|---|---|---|---|---|---|
+| Technical Lead | Shafwan Khairullah | Penuh (`sudo`) | Seluruh VPS (infrastruktur, keamanan, deployment) | Ya — approver utama, semua perubahan `apps/ctfd` | Ya |
+| Content Lead | Hasbi Ray Chaibir | Terbatas (`apps/website`) + **`sudo` sebagai PIC cadangan insiden** | `apps/website`, plus akses darurat ke seluruh VPS saat Technical Lead berhalangan | Tidak relevan untuk operasional harian | Tidak |
+| E-Learning Lead | Abiyu Nayaka | Terbatas | `apps/elearning` saja | Tidak relevan | Ya |
+| CTF Event Lead | Michael Louis Dalen | **Tidak ada akses SSH** — hanya panel admin CTFd dan panel admin website | Konten challenge via panel admin CTFd | Tidak relevan (tidak menyentuh server) | Ya |
 
 > ⚠️ **Catatan risiko (perlu mitigasi):** Content Lead ditunjuk sebagai PIC cadangan dengan akses `sudo`, padahal perannya tidak berkaitan dengan infrastruktur. Agar akses ini tidak hanya jadi formalitas, **wajib**:
 > - Content Lead dilatih menjalankan skrip rollback (lihat bagian #6) minimal sekali sebelum event besar, bukan hanya diberi kredensial.
@@ -68,3 +68,4 @@ Berdasarkan tabel stakeholder di `docs/PRD.md`, berikut pemetaan awal ke akses t
 **Keputusan final (per rapat tim):**
 - Staging cukup di VPS yang sama (opsi bagian #1) untuk saat ini — evaluasi ulang kalau resource jadi masalah saat testing bersamaan dengan production.
 - CTF Event Lead tidak memerlukan akses SSH; akses panel admin CTFd sudah cukup untuk mengelola challenge.
+- Panel admin website (`/admin`, Filament) hanya untuk Technical Lead, E-Learning Lead, dan CTF Event Lead. Email mereka dicantumkan di `ADMIN_EMAILS` pada `.env` production (bukan di repo); akun dibuat dengan `php artisan admin:create <email>`. Pendaftaran akun publik (`/register`) ditutup.

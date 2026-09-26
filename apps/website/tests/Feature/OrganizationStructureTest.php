@@ -7,7 +7,6 @@ use App\Filament\Resources\BoardMembers\Pages\ManageBoardMembers;
 use App\Models\BoardMember;
 use App\Models\BoardPeriod;
 use App\Models\Division;
-use App\Models\User;
 use Filament\Actions\CreateAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -90,9 +89,7 @@ class OrganizationStructureTest extends TestCase
 
     public function test_halaman_admin_struktur_organisasi_bisa_dibuka(): void
     {
-        // Tanpa FilamentUser, Filament hanya mengizinkan akses di env local (middleware Authenticate Filament).
-        config(['app.env' => 'local']);
-        $this->actingAs(User::factory()->create());
+        $this->actingAsAdmin();
 
         foreach (['/admin/board-members', '/admin/board-periods', '/admin/divisions'] as $url) {
             $this->get($url)->assertOk();
@@ -101,8 +98,7 @@ class OrganizationStructureTest extends TestCase
 
     public function test_form_admin_divisi_wajib_hanya_untuk_bagian_divisi(): void
     {
-        config(['app.env' => 'local']);
-        $this->actingAs(User::factory()->create());
+        $this->actingAsAdmin();
         $period = BoardPeriod::factory()->active()->create();
 
         Livewire::test(ManageBoardMembers::class)
