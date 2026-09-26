@@ -50,6 +50,7 @@ Tanpa `npm run dev`, halaman memakai hasil `npm run build` terakhir.
 | Beranda | http://localhost:8000/ |
 | Struktur Organisasi | http://localhost:8000/struktur-organisasi |
 | Berita & Kegiatan | http://localhost:8000/berita |
+| Galeri | http://localhost:8000/galeri |
 | Panel admin | http://localhost:8000/admin |
 
 ## Akun admin
@@ -75,6 +76,18 @@ Menjalankan ulang tidak menggandakan data. Menghapus semua contoh (termasuk file
 
 ```bash
 php artisan tinker --execute="App\Models\Post::where('slug', 'like', 'contoh-%')->get()->each->delete();"
+```
+
+**Galeri** — 3 album terbit + 1 draft berisi "foto" warna bernomor, semua berjudul "Contoh: …". Jalankan setelah data contoh Berita supaya album pertama tertaut ke tulisan contoh:
+
+```bash
+php artisan db:seed --class=DemoGallerySeeder
+```
+
+Menghapus semua album contoh (termasuk folder fotonya):
+
+```bash
+php artisan tinker --execute="App\Models\Album::where('slug', 'like', 'contoh-%')->get()->each->delete();"
 ```
 
 **Struktur Organisasi** — impor dari file daftar pengurus (file dan foto disimpan di luar repo, jangan di-commit):
