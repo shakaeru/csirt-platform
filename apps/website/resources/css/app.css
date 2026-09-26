@@ -1,3 +1,42 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@import 'flowbite/src/themes/default';
+
+@plugin 'flowbite/plugin';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../../node_modules/flowbite';
+
+/* Warna brand CSIRT — sumber kebenaran: assets/brand/design-tokens.css (root repo).
+   Kalau token di sana berubah, salin nilainya ke sini. Kelas: bg-csirt-primary, text-csirt-navy, dst. */
+@theme {
+  --color-csirt-primary: #1260a5;
+  --color-csirt-primary-light: #6b96bc;
+  --color-csirt-primary-lighter: #235a87;
+  --color-csirt-navy: #073d53;
+  --color-csirt-secondary: #8ebd45;
+  --color-csirt-accent-lime: #c5d73d;
+  --color-csirt-accent-red: #af112d;
+
+  --color-csirt-neutral-100: #f5f7fa;
+  --color-csirt-neutral-600: #6b7280;
+  --color-csirt-neutral-900: #36343a;
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
