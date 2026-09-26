@@ -9,6 +9,8 @@
 *.pfx
 id_rsa*
 id_ed25519*
+# State certbot: sertifikat + private key akun Let's Encrypt (sebagian .json, tidak tertangkap *.pem/*.key)
+infra/certbot/conf/
 
 # OS
 .DS_Store
