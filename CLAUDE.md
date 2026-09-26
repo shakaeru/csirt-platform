@@ -34,7 +34,7 @@ Sesi ini kemungkinan dijalankan dari WSL lokal, mengeksekusi perintah ke VPS lew
 
 ## Konvensi Proyek
 
-- **Git:** branch `main` (production/stable), `dev` (integrasi), `feature/<nama>` untuk kerja individu. Commit message pakai [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, dst.) — [Menebak: sesuaikan kalau tim UKM sudah punya konvensi lain].
+- **Git:** branch `main` (production/stable) dan `feature/<nama>` untuk kerja individu, di-PR langsung ke `main` — tidak ada branch `dev`. Commit message pakai [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, dst.) — [Menebak: sesuaikan kalau tim UKM sudah punya konvensi lain].
 - **Docker:** setiap sub-aplikasi punya `docker-compose.yml` sendiri di foldernya masing-masing; `infra/docker-compose.yml` hanya untuk reverse proxy bersama.
 - **Struktur folder:** lihat `README.md` di root.
 

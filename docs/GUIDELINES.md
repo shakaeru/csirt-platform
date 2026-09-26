@@ -12,9 +12,8 @@ Kode dan dokumen **selalu** ditulis/diedit dari WSL lalu di-push ke Git remote (
 
 ## 2. Git Workflow
 
-- `main` = production-ready, hanya menerima merge lewat Pull Request (bukan push langsung)
-- `dev` = branch integrasi antar anggota
-- `feature/<nama-singkat>` = kerja per fitur/perbaikan
+- `main` = production-ready, hanya menerima merge lewat Pull Request (bukan push langsung). VPS menarik dari `main`, jadi setiap merge berarti siap di-deploy.
+- `feature/<nama-singkat>` = kerja per fitur/perbaikan — dibuat dari `main` terbaru dan di-PR langsung ke `main` (tidak ada branch integrasi `dev`). Branch terhapus otomatis setelah PR di-merge (pengaturan repo).
 - Commit message: `<tipe>: <deskripsi singkat>` — tipe: `feat`, `fix`, `docs`, `chore`, `refactor`, `security`
 
 ## 3. Secrets & Konfigurasi
