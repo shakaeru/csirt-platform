@@ -39,19 +39,19 @@ Mengikuti PRD § 4.3 ("CTFd ... dengan Docker network sendiri — jangan share d
     ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
     │   website    │   │  elearning   │   │     ctfd     │
     └──────┬───────┘   └──────┬───────┘   └──────┬───────┘
-           │ internal         │ internal         │ internal
+           │ volume           │ internal         │ internal
            ▼                  ▼                  ▼
     ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
-    │      db      │   │  db + redis  │   │  db + redis  │
+    │    SQLite    │   │  db + redis  │   │  db + redis  │
     └──────────────┘   └──────────────┘   └──────────────┘
 ```
 
-`internal` = network privat milik compose project masing-masing (`internal: true`), tidak di-join Nginx.
+`internal` = network privat milik compose project masing-masing (`internal: true`), tidak di-join Nginx. Website tidak punya container db: database-nya SQLite, file di volume Docker (§ 6).
 
 | Dari ↓ / Ke → | website | elearning | ctfd | db/redis |
 |---|---|---|---|---|
 | nginx | ✅ | ✅ | ✅ | ❌ |
-| website | — | ❌ | ❌ | hanya miliknya |
+| website | — | ❌ | ❌ | — (SQLite di volume sendiri) |
 | elearning | ❌ | — | ❌ | hanya miliknya |
 | ctfd | ❌ | ❌ | — | hanya miliknya |
 
@@ -204,7 +204,7 @@ Batas ini berlapis dan **harus diselaraskan** setiap kali salah satunya diubah:
 | Lapisan | Setting | Nilai |
 |---|---|---|
 | Nginx edge (`infra/`) | `client_max_body_size` di location upload | `13m` |
-| Container `apps/website` (web server + PHP) | `client_max_body_size`, `post_max_size`, `upload_max_filesize` | ≥ 13M, ≥ 13M, ≥ 12M |
+| Container `apps/website` (web server + PHP) | `client_max_body_size`, `post_max_size`, `upload_max_filesize` | `13m`, `13M`, `12M` (env di `apps/website/docker-compose.yml`) |
 | Livewire | `temporary_file_upload.rules` | `max:12288` (default, 12 MB) |
 | Filament | `FileUpload::maxSize()` | ≤ 12288 KB |
 
@@ -237,6 +237,21 @@ docker compose run --rm certbot certonly --webroot -w /var/www/certbot \
 - **HSTS:** dimulai `max-age` pendek tanpa `includeSubDomains`; naikkan setelah HTTPS stabil, dan tambahkan `includeSubDomains` hanya setelah semua subdomain HTTPS.
 - **Default server 443:** `ssl_reject_handshake` menolak SNI yang tidak dikenal, jadi akses lewat IP tidak menerima sertifikat apa pun.
 
-## 6. Yang Masih Perlu Diputuskan
+## 6. Container Website (`apps/website`)
+
+Prosedur deploy/update: `apps/website/README.md` § Deploy.
+
+- **Image** (`apps/website/Dockerfile`, dibangun di VPS dengan `docker compose build`): tahap `node:24.21-alpine` membangun aset Vite, lalu `serversideup/php:8.5-fpm-nginx-trixie-v4.5.1` — Nginx + PHP-FPM dalam satu container, berjalan tanpa root, port 8080 (= upstream `website:8080` di `website.conf`). Lisensi image GPL-3.0; kita hanya menjalankannya, tidak mendistribusikan, jadi tidak ada kewajiban untuk kode aplikasi. Versi di-pin dan dinaikkan secara sadar.
+- **Database: SQLite**, bukan MySQL/MariaDB seperti rencana awal PRD § 4.1 (keputusan 26 September 2026). Alasan: tanpa container db (RAM VPS disisakan untuk CTFd saat lomba), backup cukup satu file, sama persis dengan lokal/tes, dan beban tulis kecil (3 admin + sesi). Mode WAL + `busy_timeout` 5 detik (`.env`). Evaluasi ulang kalau beban tulis naik (mis. formulir pendaftaran ramai): pindah ke MariaDB = tambah service `db` di network `internal` + impor data.
+- **Volume:** `storage` (`storage/app` — upload foto + file sementara Livewire) dan `database` (file SQLite). Keduanya **wajib masuk backup**; `docker compose down -v` menghapusnya.
+- **Rahasia:** `apps/website/.env` di VPS (owner `deploy`, mode 600), dibaca compose lewat `env_file`; template `.env.production.example`.
+- **Proxy & header:**
+  - Laravel mempercayai proxy hanya dari range network Docker (`172.16.0.0/12`, `192.168.0.0/16` — pool bawaan, `daemon.json` VPS tidak mengubahnya) dan hanya header `X-Forwarded-For` + `X-Forwarded-Proto`. `'*'` tidak dipakai: di Laravel 13 artinya semua IP dipercaya, sehingga IP pengunjung bisa dipalsukan. `X-Forwarded-Host/Port` tidak dipercaya karena Nginx edge meneruskannya dari klien apa adanya.
+  - HSTS hanya dari Nginx edge (§ 5): HSTS bawaan image (`max-age` setahun + `includeSubDomains`) dihapus di `docker/nginx/security.conf`, supaya tidak mengunci `learn.*`/`ctf.*` ke HTTPS sebelum waktunya. Header lain bawaan image tetap: `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`.
+  - Real-IP bawaan image (`CF-Connecting-IP` dari range Docker) dimatikan (`docker/nginx/remoteip.conf`) — header itu bisa dikirim klien lewat edge.
+- **Start container:** `php artisan optimize` (cache config/route/view) otomatis; migrasi **manual** setelah backup (`AUTORUN_LARAVEL_MIGRATION=false`). Healthcheck memakai route `/up` Laravel.
+- **Resource:** `mem_limit: 512m`, PHP-FPM maks. 8 proses, `memory_limit` 256M — cukup untuk olah foto galeri (≤ 2000 px setelah diperkecil di browser). Sesuaikan setelah melihat RAM VPS dan menjelang lomba (§ 2 "Risiko yang tersisa").
+
+## 7. Yang Masih Perlu Diputuskan
 
 - Apakah root domain (`csirt.pcr.ac.id`) untuk Website Profil, atau justru dipakai sebagai landing page yang mengarahkan ke ketiga subdomain? [ISI DI SINI]

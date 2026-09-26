@@ -44,7 +44,7 @@ csirt-platform/
 
 1. Kerja & edit kode dari WSL lokal (Claude Code jalan di sini, remote ke VPS lewat SSH untuk tugas infra).
 2. Commit & push ke branch `feature/...` (dibuat dari `main`), lalu merge ke `main` lewat Pull Request — branch terhapus otomatis setelah merge.
-3. Di VPS (user `deploy`, repo di `/opt/csirt`): `git -C /opt/csirt pull --ff-only`, lalu `docker compose up -d` di folder yang berubah (`infra/` atau `apps/<nama>`). Untuk `infra/`, jalankan `nginx -t` dulu — lihat `docs/ARCHITECTURE.md` § 2 "Risiko yang tersisa".
+3. Di VPS (user `deploy`, repo di `/opt/csirt`): `git -C /opt/csirt pull --ff-only`, lalu `docker compose up -d` di folder yang berubah (`infra/` atau `apps/<nama>`). Untuk `infra/`, jalankan `nginx -t` dulu — lihat `docs/ARCHITECTURE.md` § 2 "Risiko yang tersisa". Untuk `apps/website` (build image + migrasi): `apps/website/README.md` § Deploy.
 
 ## Operasional di VPS
 

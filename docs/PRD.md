@@ -64,8 +64,8 @@ Efisiensi Sumber Daya: Mengoptimalkan satu VPS (Virtual Private Server) untuk me
   - Laravel (versi stabil terbaru saat mulai development — cek rilis LTS terkini)
   - Filament PHP sebagai admin panel/CMS internal
   - Blade + Livewire/Alpine.js untuk interaktivitas ringan tanpa perlu SPA penuh
-  - MySQL/MariaDB
-  - Nginx + PHP-FPM, deployment manual atau via Laravel Forge kalau budget ada
+  - Database: SQLite (file di volume Docker) — menggantikan rencana awal MySQL/MariaDB, keputusan 26 September 2026; alasan dan kapan dievaluasi ulang: `docs/ARCHITECTURE.md` § 6
+  - Nginx + PHP-FPM (satu container, image serversideup/php), deployment manual di VPS (`apps/website/README.md` § Deploy) atau via Laravel Forge kalau budget ada
 - **Non-functional requirements:** uptime standar, tidak kritikal terhadap waktu tertentu.
 
 ### 4.2 Platform E-Learning
