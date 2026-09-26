@@ -1,0 +1,49 @@
+# Konteks build image production (Dockerfile). Yang tidak perlu/ tidak boleh masuk image.
+
+# Rahasia & data lokal — .env production diberikan lewat env_file, bukan disalin ke image
+.env
+.env.*
+database/*.sqlite*
+database/sqlite/
+
+# Hasil build/instal — dibuat ulang di dalam image
+node_modules/
+vendor/
+public/build/
+public/hot
+public/storage
+public/css/filament/
+public/js/filament/
+public/fonts/filament/
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+
+# Isi storage lokal (upload, cache, log) — kerangka foldernya tetap ikut (.gitignore)
+storage/app/private/*
+!storage/app/private/.gitignore
+storage/app/public/*
+!storage/app/public/.gitignore
+storage/framework/cache/*
+!storage/framework/cache/.gitignore
+storage/framework/sessions/*
+!storage/framework/sessions/.gitignore
+storage/framework/testing/
+storage/framework/views/*
+!storage/framework/views/.gitignore
+storage/logs/*
+!storage/logs/.gitignore
+
+# Pengembangan & dokumentasi
+tests/
+phpunit.xml
+.phpunit.cache/
+.phpunit.result.cache
+*.log
+Dockerfile
+docker-compose.yml
+.dockerignore
+README.md
+CLAUDE.md
+.editorconfig
+.gitattributes
+.gitignore

@@ -131,3 +131,52 @@ composer install && npm install && php artisan migrate && npm run build
 | `/admin` → 403 | Email belum ada di `ADMIN_EMAILS`, atau akun belum dibuat lewat `admin:create`. Setelah mengubah `.env`: `php artisan config:clear` |
 | Gambar/foto tidak tampil | Belum `php artisan storage:link`, atau port server beda dengan `APP_URL` |
 | Perubahan tampilan tidak terlihat | Jalankan `npm run dev`, atau `npm run build` ulang |
+
+## Deploy (production)
+
+Website berjalan sebagai container `website` (image dari `Dockerfile`: Nginx + PHP-FPM 8.5, port 8080) di network `net-website`. Nginx edge (`infra/`) meneruskan https://csirt.pcr.ac.id ke `website:8080`; selama container itu belum jalan, pengunjung melihat halaman "Segera Hadir". Data ada di dua volume: `storage` (upload) dan `database` (SQLite). Detail dan alasannya: `docs/ARCHITECTURE.md` § 6.
+
+Semua perintah di bawah dijalankan sebagai `deploy` di VPS, dari `/opt/csirt/apps/website`.
+
+### Deploy pertama (sekali)
+
+```bash
+git -C /opt/csirt pull --ff-only
+cp .env.production.example .env && chmod 600 .env
+echo "base64:$(openssl rand -base64 32)"   # salin hasilnya ke APP_KEY di .env
+nano .env                                  # isi APP_KEY dan ADMIN_EMAILS
+docker compose build
+# Migrasi di container sekali-jalan: belum terhubung ke Nginx, jadi situs belum live.
+docker compose run --rm --no-deps website php artisan migrate --force
+docker compose up -d                       # live — "Segera Hadir" hilang
+docker compose ps                          # tunggu status (healthy)
+```
+
+Lalu buat akun admin, satu per email di `ADMIN_EMAILS` (password lewat prompt, jadi perlu terminal interaktif — dari WSL: `ssh -t csirt-vps '…'`):
+
+```bash
+docker compose exec website php artisan admin:create <email>
+```
+
+### Update setelah PR di-merge
+
+```bash
+git -C /opt/csirt pull --ff-only
+docker compose build
+docker compose run --rm --no-deps website php artisan migrate --force
+docker compose up -d
+```
+
+Backup database sebelum migrasi — skrip deploy dan backup menyusul (sampai ada, cek dulu apakah PR menambah migrasi).
+
+### Operasional
+
+| Keperluan | Perintah |
+|---|---|
+| Status & health | `docker compose ps` |
+| Log aplikasi + Nginx internal | `docker compose logs --tail 100 website` |
+| Setelah mengubah `.env` (config di-cache saat start) | `docker compose up -d --force-recreate` |
+| Perintah artisan | `docker compose exec website php artisan <perintah>` |
+| Rollback kode | `git -C /opt/csirt checkout <commit>` lalu `docker compose up -d --build` (migrasi tidak ikut mundur) |
+
+**Jangan** menjalankan seeder contoh (`Demo*Seeder`) di production, dan jangan `docker compose down -v` — `-v` menghapus volume berisi database dan semua upload.

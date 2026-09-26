@@ -43,6 +43,17 @@ Aturan proyek (keamanan, Git, kerja remote ke VPS) ada di `CLAUDE.md` di root re
 - **Akses panel admin (`/admin`):** hanya email di `ADMIN_EMAILS` (`.env`, dipisah koma — email tidak disimpan di repo) **dan** sudah terverifikasi — lihat `User::canAccessPanel()`. Berlaku di semua environment, termasuk local. Akun admin dibuat dengan `php artisan admin:create <email>` (password lewat prompt tersembunyi; akun langsung terverifikasi). Menjalankan `admin:create` untuk email yang sudah terdaftar mengambil alih akunnya (password baru, sesi lama diputus). Di tes: `$this->actingAsAdmin()`.
 - **Pendaftaran akun publik (`/register`) ditutup** — akun hanya dibuat operator. Syarat terverifikasi di atas tetap dipertahankan sebagai lapis kedua kalau pendaftaran suatu saat dibuka lagi. Jangan membuka `/register` tanpa keputusan tim.
 
+## Deploy (production)
+
+Container `website` (Dockerfile + docker-compose.yml di folder ini), serversideup/php fpm-nginx di-pin, port 8080, SQLite + upload di volume. Prosedur: README § Deploy; arsitektur: `docs/ARCHITECTURE.md` § 6.
+
+- **Proxy:** `trustProxies()` di `bootstrap/app.php` hanya range network Docker dan hanya header For + Proto. **Jangan** ganti ke `'*'` (di Laravel 13 = percaya semua IP → IP pengunjung bisa dipalsukan lewat X-Forwarded-For) dan jangan tambahkan X-Forwarded-Host/Port (host header injection). Dijaga `TrustedProxyTest`.
+- **HSTS hanya di Nginx edge.** `docker/nginx/security.conf` sengaja menghapus HSTS bawaan image (`includeSubDomains` setahun); `docker/nginx/remoteip.conf` sengaja kosong (real-IP bawaan image bisa dipalsukan).
+- `.env` production dibaca compose (`env_file`) — tanpa interpolasi `${...}`; config di-cache saat start, jadi perubahan `.env` butuh `up -d --force-recreate`. Variabel baru yang wajib di production → tambahkan juga ke `.env.production.example`.
+- Migrasi **tidak** otomatis saat start (`AUTORUN_LARAVEL_MIGRATION=false`) — dijalankan manual setelah backup.
+- Batas upload container (`NGINX_CLIENT_MAX_BODY_SIZE`, `PHP_POST_MAX_SIZE`, `PHP_UPLOAD_MAX_FILE_SIZE`) harus selaras dengan tabel ARCHITECTURE § 4.
+- Ekstensi PHP baru (mis. untuk paket composer) → `install-php-extensions` di Dockerfile, bukan hanya di WSL.
+
 ## Perintah
 
 ```bash
