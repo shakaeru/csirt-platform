@@ -1,7 +1,7 @@
 {{--
     Layout utama situs publik. Juga default layout Livewire 4 (`layouts::app`).
     Konten halaman: @extends('layouts.app') + @section('content'), atau {{ $slot }}
-    untuk komponen Livewire full-page. Judul tab opsional: @extends('layouts.app', ['title' => '...']).
+    untuk komponen Livewire full-page. Opsional: @extends('layouts.app', ['title' => '...', 'description' => '...']).
     Warna hanya dari design tokens (kelas csirt-*), bukan warna default Tailwind.
 --}}
 @php
@@ -10,7 +10,7 @@
         ['label' => 'Beranda', 'href' => route('home'), 'active' => request()->routeIs('home')],
         ['label' => 'Tentang', 'href' => '#'],
         ['label' => 'Struktur Organisasi', 'href' => route('struktur-organisasi'), 'active' => request()->routeIs('struktur-organisasi')],
-        ['label' => 'Berita & Kegiatan', 'href' => '#'],
+        ['label' => 'Berita & Kegiatan', 'href' => route('berita.index'), 'active' => request()->routeIs('berita.*')],
         ['label' => 'Prestasi', 'href' => '#'],
         ['label' => 'Kontak', 'href' => '#'],
     ];
@@ -23,6 +23,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ isset($title) ? $title.' — ' : '' }}UKM CSIRT Politeknik Caltex Riau</title>
+    @isset($description)
+        <meta name="description" content="{{ $description }}">
+    @endisset
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
