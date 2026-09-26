@@ -25,9 +25,13 @@ Kode dan dokumen **selalu** ditulis/diedit dari WSL lalu di-push ke Git remote (
 
 ## 4. Review & Akses
 
-- Akses SSH ke VPS menggunakan **user terpisah per anggota** (bukan satu user `deploy` bersama), dengan public key masing-masing didaftarkan di `~/.ssh/authorized_keys`. Ini wajib untuk audit trail — kalau terjadi insiden (misal file production ter-hapus atau service down), harus bisa dilacak siapa yang login terakhir.
+- Akses SSH untuk **login interaktif/administrasi** menggunakan **user terpisah per anggota** (bukan satu user bersama), dengan public key masing-masing didaftarkan di `~/.ssh/authorized_keys`. Ini wajib untuk audit trail — kalau terjadi insiden (misal file production ter-hapus atau service down), harus bisa dilacak siapa yang login terakhir.
   - Anggota inti (core team/pengurus divisi teknis) → akses penuh (bisa `sudo`).
   - Anggota kontributor → akses terbatas ke direktori `apps/<nama-app>` masing-masing, tanpa `sudo`.
+- **Akun layanan `deploy`** khusus untuk deployment — `git pull`, `docker compose`, skrip deploy, CI, dan sesi Claude Code — bukan untuk administrasi sistem.
+  - `deploy` ada di grup `docker`, yang **setara root tanpa password**: siapa pun yang memegang private key-nya praktis punya root di VPS. Perlakukan key ini seperti kredensial root.
+  - Tiap pemakai (anggota, CI) memakai **key sendiri** di `authorized_keys` milik `deploy`, bukan satu key bersama — log SSH mencatat fingerprint key per login, jadi audit trail tetap jalan dan akses bisa dicabut per orang.
+  - Target hardening: setelah akun pribadi anggota inti dengan `sudo` tersedia, keluarkan `deploy` dari grup `sudo` — akun deployment cukup grup `docker`.
 - Perubahan ke `apps/ctfd` **wajib approval minimal 1 reviewer lain** (bukan self-merge), khususnya untuk PR yang menyentuh konfigurasi container, port, atau plugin — karena downtime saat lomba berdampak langsung ke peserta eksternal, beda risikonya dengan `apps/website` atau `apps/elearning`.
 
 ## 5. Dokumentasi
