@@ -18,4 +18,17 @@ return [
         explode(',', (string) env('ADMIN_EMAILS', '')),
     ))),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Zona waktu tampilan
+    |--------------------------------------------------------------------------
+    |
+    | Database dan aplikasi tetap UTC (config/app.php). Tanggal/jam ditampilkan dan diisi dalam
+    | zona ini — panel admin lewat FilamentTimezone (AppServiceProvider), halaman publik lewat
+    | ->timezone(config('csirt.timezone')). Contoh: jadwal terbit berita diisi dalam WIB.
+    |
+    */
+
+    'timezone' => env('DISPLAY_TIMEZONE', 'Asia/Jakarta'),
+
 ];
