@@ -1,0 +1,47 @@
+# Website Profil (csirt.pcr.ac.id) — production. Lihat README.md § Deploy dan
+# docs/ARCHITECTURE.md § 2 (topologi) & § 6 (container website).
+# Dijalankan di VPS sebagai `deploy` dari /opt/csirt/apps/website.
+name: csirt-website
+
+services:
+  # Nama service `website` = upstream di infra/nginx/conf.d/website.conf (http://website:8080).
+  # Begitu container ini jalan di net-website, halaman "Segera Hadir" otomatis tidak tampil lagi.
+  website:
+    build: .
+    image: csirt-website:latest
+    # Rahasia & setting aplikasi (APP_KEY, ADMIN_EMAILS, ...) — .env di VPS, mode 600, tidak di-commit.
+    # Template: .env.production.example. Config di-cache saat start → ubah .env = restart container.
+    env_file: .env
+    environment:
+      # Batas upload diselaraskan dengan ARCHITECTURE § 4 (edge 13m, Livewire 12 MB).
+      NGINX_CLIENT_MAX_BODY_SIZE: 13m
+      PHP_POST_MAX_SIZE: 13M
+      PHP_UPLOAD_MAX_FILE_SIZE: 12M
+      PHP_MEMORY_LIMIT: 256M
+      PHP_OPCACHE_ENABLE: "1"
+      PHP_FPM_PM_MAX_CHILDREN: "8"
+      # Healthcheck image memakai route health Laravel (boot aplikasi, bukan hanya ping PHP-FPM).
+      HEALTHCHECK_PATH: /up
+      # Saat start: config/route/view/event cache (php artisan optimize). Migrasi TIDAK otomatis —
+      # dijalankan manual setelah backup database (README § Deploy).
+      AUTORUN_ENABLED: "true"
+      AUTORUN_LARAVEL_MIGRATION: "false"
+      AUTORUN_LARAVEL_STORAGE_LINK: "false" # symlink sudah dibuat di image
+    volumes:
+      # Upload (foto pengurus, sampul, galeri, prestasi) + file sementara Livewire.
+      - storage:/var/www/html/storage/app
+      # File SQLite (DB_DATABASE di .env) — terpisah supaya mudah di-backup.
+      - database:/var/www/html/database/sqlite
+    networks:
+      - net-website
+    # Tidak ada `ports:` — hanya Nginx edge yang publish port (ARCHITECTURE § 2 aturan 1).
+    mem_limit: 512m
+    restart: unless-stopped
+
+volumes:
+  storage:
+  database:
+
+networks:
+  net-website:
+    external: true
