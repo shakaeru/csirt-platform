@@ -32,6 +32,8 @@ Kode dan dokumen **selalu** ditulis/diedit dari WSL lalu di-push ke Git remote (
   - `deploy` ada di grup `docker`, yang **setara root tanpa password**: siapa pun yang memegang private key-nya praktis punya root di VPS. Perlakukan key ini seperti kredensial root.
   - Tiap pemakai (anggota, CI) memakai **key sendiri** di `authorized_keys` milik `deploy`, bukan satu key bersama — log SSH mencatat fingerprint key per login, jadi audit trail tetap jalan dan akses bisa dicabut per orang.
   - Target hardening: setelah akun pribadi anggota inti dengan `sudo` tersedia, keluarkan `deploy` dari grup `sudo` — akun deployment cukup grup `docker`.
+  - **Lokasi di VPS:** repo di `/opt/csirt` (owner `deploy:deploy`, mode `750` — akun lain tidak bisa membaca `.env` aplikasi). Repo di-clone dengan deploy key **read-only** `/home/deploy/.ssh/csirt-platform-deploy` (di GitHub: "csirt-vps deploy (read-only)"), dipasang lewat `core.sshCommand` repo — cukup `git -C /opt/csirt pull --ff-only`. `--ff-only` membuat pull gagal dengan jelas kalau ada perubahan lokal di VPS, bukan diam-diam membuat merge commit.
+  - Deploy key tidak bisa push — perubahan tetap lewat PR dari WSL (§ 1). Kalau VPS diduga bocor: cabut key di GitHub (Settings → Deploy keys, atau `gh repo deploy-key delete <id>`), lalu buat key baru di VPS.
 - Perubahan ke `apps/ctfd` **wajib approval minimal 1 reviewer lain** (bukan self-merge), khususnya untuk PR yang menyentuh konfigurasi container, port, atau plugin — karena downtime saat lomba berdampak langsung ke peserta eksternal, beda risikonya dengan `apps/website` atau `apps/elearning`.
 
 ## 5. Dokumentasi
