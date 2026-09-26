@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Posts\Tables;
 
-use App\Enums\PostStatus;
+use App\Enums\PublicationStatus;
 use App\Models\Post;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -35,7 +35,7 @@ class PostsTable
                     ->badge(),
                 TextColumn::make('status')
                     ->label('Status')
-                    ->state(fn (Post $record): PostStatus => $record->status())
+                    ->state(fn (Post $record): PublicationStatus => $record->status())
                     ->badge(),
                 TextColumn::make('published_at')
                     ->label('Terbit pada')
@@ -55,13 +55,10 @@ class PostsTable
                     ->relationship('category', 'name'),
                 SelectFilter::make('status')
                     ->label('Status')
-                    ->options(PostStatus::class)
-                    ->query(fn (Builder $query, array $data): Builder => match (PostStatus::tryFrom((string) ($data['value'] ?? ''))) {
-                        PostStatus::Draft => $query->whereNull('published_at'),
-                        PostStatus::Scheduled => $query->where('published_at', '>', now()),
-                        PostStatus::Published => $query->where('published_at', '<=', now()),
-                        default => $query,
-                    }),
+                    ->options(PublicationStatus::class)
+                    ->query(fn (Builder $query, array $data): Builder => ($status = PublicationStatus::tryFrom((string) ($data['value'] ?? '')))
+                        ? $query->wherePublicationStatus($status)
+                        : $query),
             ])
             ->recordActions([
                 Action::make('lihat')
@@ -69,7 +66,7 @@ class PostsTable
                     ->icon(Heroicon::OutlinedArrowTopRightOnSquare)
                     ->url(fn (Post $record): string => route('berita.show', $record))
                     ->openUrlInNewTab()
-                    ->visible(fn (Post $record): bool => $record->status() === PostStatus::Published),
+                    ->visible(fn (Post $record): bool => $record->isPublished()),
                 EditAction::make(),
                 DeleteAction::make(),
             ])

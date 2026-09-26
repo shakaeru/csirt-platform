@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\PostStatus;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
@@ -44,7 +43,7 @@ class PostController extends Controller
     public function show(Post $post): View
     {
         // Draft dan terjadwal tidak boleh bisa diintip lewat alamatnya.
-        abort_unless($post->status() === PostStatus::Published, 404);
+        abort_unless($post->isPublished(), 404);
 
         return view('berita.show', ['post' => $post->load(['category', 'tags'])]);
     }

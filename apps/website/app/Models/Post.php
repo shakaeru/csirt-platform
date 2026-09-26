@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use App\Enums\PostStatus;
+use App\Models\Concerns\HasPublication;
 use Database\Factories\PostFactory;
 use Filament\Forms\Components\RichEditor\Models\Concerns\InteractsWithRichContent;
 use Filament\Forms\Components\RichEditor\Models\Contracts\HasRichContent;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Scope;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +19,7 @@ use Illuminate\Support\Str;
 class Post extends Model implements HasRichContent
 {
     /** @use HasFactory<PostFactory> */
-    use HasFactory, InteractsWithRichContent;
+    use HasFactory, HasPublication, InteractsWithRichContent;
 
     /** Disk gambar sampul (lihat FileUpload di PostResource). */
     public const COVER_DISK = 'public';
@@ -56,35 +54,9 @@ class Post extends Model implements HasRichContent
         $this->registerRichContent('content');
     }
 
-    /**
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'published_at' => 'datetime',
-        ];
-    }
-
     public function getRouteKeyName(): string
     {
         return 'slug';
-    }
-
-    /** Hanya tulisan yang tanggal terbitnya sudah lewat — draft dan terjadwal tidak tampil. */
-    #[Scope]
-    protected function published(Builder $query): void
-    {
-        $query->whereNotNull('published_at')->where('published_at', '<=', now());
-    }
-
-    public function status(): PostStatus
-    {
-        return match (true) {
-            $this->published_at === null => PostStatus::Draft,
-            $this->published_at->isFuture() => PostStatus::Scheduled,
-            default => PostStatus::Published,
-        };
     }
 
     /**
@@ -111,19 +83,6 @@ class Post extends Model implements HasRichContent
         return Attribute::get(fn (): ?string => $this->cover_path
             ? Storage::disk(self::COVER_DISK)->url($this->cover_path)
             : null);
-    }
-
-    /**
-     * Tanggal terbit untuk ditampilkan: zona waktu tampilan (WIB) dan bahasa Indonesia, mis. "12 Oktober 2026".
-     *
-     * @return Attribute<string|null, never>
-     */
-    protected function publishedDate(): Attribute
-    {
-        return Attribute::get(fn (): ?string => $this->published_at
-            ?->timezone(config('csirt.timezone'))
-            ->locale('id')
-            ->translatedFormat('j F Y'));
     }
 
     /**
