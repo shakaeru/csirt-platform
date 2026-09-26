@@ -23,7 +23,7 @@ Sesi ini kemungkinan dijalankan dari WSL lokal, mengeksekusi perintah ke VPS lew
 
 ## Aturan Keamanan (TIDAK BOLEH DILANGGAR TANPA KONFIRMASI EKSPLISIT)
 
-1. **Jangan pernah** menjalankan perintah sebagai `root` atau `sudo su -`. Gunakan user `deploy` dan sudo terbatas.
+1. **Jangan pernah** menjalankan perintah sebagai `root` atau `sudo su -`. Gunakan user SSH pribadi anggota yang menjalankan sesi (bukan user `deploy` bersama — lihat `docs/GUIDELINES.md` § 4), dan `sudo` hanya bila level akses user tersebut mengizinkan.
 2. **Jangan** mengubah `/etc/ssh/sshd_config`, aturan UFW, atau konfigurasi firewall lain tanpa menjelaskan dulu perubahannya dan menunggu konfirmasi.
 3. **Jangan** commit file `.env`, kredensial, private key, atau secrets apa pun. Gunakan `.env.example` sebagai template.
 4. **Jangan** menjalankan `docker compose down`/restart pada `apps/ctfd` di jam-jam kompetisi berlangsung tanpa konfirmasi eksplisit — downtime di sini berdampak langsung ke peserta lomba.
@@ -44,6 +44,6 @@ Sesi ini kemungkinan dijalankan dari WSL lokal, mengeksekusi perintah ke VPS lew
 
 ## Yang Masih Perlu Dilengkapi
 
-- Tech stack final tiap sub-aplikasi (lihat `[ISI DI SINI]` di `docs/PRD.md`)
+- Struktur repo aplikasi Laravel (monorepo vs repo per app) & konfigurasi panel Filament — tech stack sudah final di `docs/PRD.md` § 4.1–4.2
 - Strategi backup & rollback untuk `apps/ctfd` sebelum event besar
 - CI/CD (saat ini deployment manual via `git pull` + `docker compose up -d` di VPS)
