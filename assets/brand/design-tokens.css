@@ -1,0 +1,76 @@
+/*
+  design-tokens.css — CSIRT PCR Brand Color Palette
+  Sumber: ekstraksi piksel dari assets/brand/csirt-logo.png (k-means clustering, bukan estimasi visual).
+  Ini SATU SUMBER KEBENARAN — dimaksudkan dipakai lintas proyek (website, e-learning, CTFd theme,
+  dan proyek turunan UKM CSIRT lainnya di masa depan), bukan cuma proyek ini.
+
+  Cara pakai di proyek Tailwind: lihat blok "Tailwind extension" di bagian bawah file ini.
+  Cara pakai tanpa framework: cukup @import file ini lalu pakai var(--csirt-color-primary) dsb.
+*/
+
+:root {
+  /* Primary — biru utama shield & wordmark "CSIRT" */
+  --csirt-color-primary: #1260a5;
+  --csirt-color-primary-light: #6b96bc;   /* tint untuk hover/border ringan */
+  --csirt-color-primary-lighter: #235a87; /* tint sedang, alternatif hover */
+
+  /* Primary Dark / Navy — outline shield & teks "Politeknik Caltex Riau" */
+  --csirt-color-navy: #073d53;
+
+  /* Secondary — hijau spider/shield */
+  --csirt-color-secondary: #8ebd45;
+
+  /* Accent — hijau lime terang, untuk highlight/CTA sekunder */
+  --csirt-color-accent-lime: #c5d73d;
+
+  /* Accent — merah aksen kecil pada logo (dipakai SANGAT terbatas: badge, notifikasi, peringatan) */
+  --csirt-color-accent-red: #af112d;
+
+  /* Neutral — teks gelap ("Computer Security Incident Response Team") */
+  --csirt-color-neutral-900: #36343a;
+  --csirt-color-neutral-600: #6b7280; /* standar abu-abu menengah, bukan dari logo — untuk teks sekunder */
+  --csirt-color-neutral-100: #f5f7fa; /* standar abu-abu sangat terang — untuk background section, bukan dari logo */
+  --csirt-color-white: #ffffff;
+
+  /* Semantic aliases — pakai ini di komponen, bukan nama warna mentah, supaya gampang di-retheme */
+  --csirt-bg-page: var(--csirt-color-white);
+  --csirt-bg-subtle: var(--csirt-color-neutral-100);
+  --csirt-text-body: var(--csirt-color-neutral-900);
+  --csirt-text-muted: var(--csirt-color-neutral-600);
+  --csirt-brand-primary: var(--csirt-color-primary);
+  --csirt-brand-secondary: var(--csirt-color-secondary);
+  --csirt-link: var(--csirt-color-primary);
+  --csirt-link-hover: var(--csirt-color-primary-lighter);
+}
+
+/*
+  ============================================
+  Tailwind extension (opsional)
+  ============================================
+  Kalau proyek turunan pakai Tailwind, tempel blok ini ke tailwind.config.js:
+
+  module.exports = {
+    theme: {
+      extend: {
+        colors: {
+          csirt: {
+            primary: '#1260a5',
+            'primary-light': '#6b96bc',
+            'primary-lighter': '#235a87',
+            navy: '#073d53',
+            secondary: '#8ebd45',
+            'accent-lime': '#c5d73d',
+            'accent-red': '#af112d',
+            neutral: {
+              900: '#36343a',
+              600: '#6b7280',
+              100: '#f5f7fa',
+            },
+          },
+        },
+      },
+    },
+  }
+
+  Pemakaian di kelas: bg-csirt-primary, text-csirt-navy, border-csirt-accent-lime, dst.
+*/
