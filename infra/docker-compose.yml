@@ -7,16 +7,27 @@ services:
     image: nginx:1.30-alpine        # cabang stable; naikkan versi secara sadar
     ports:
       - "80:80"
-      # - "443:443"                 # aktifkan bersama blok TLS (ARCHITECTURE § 5)
+      - "443:443"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/snippets:/etc/nginx/snippets:ro
       - ./certbot/www:/var/www/certbot:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
     networks:
       - net-website
       - net-elearning
       - net-ctfd
     restart: unless-stopped
+
+  # Alat, bukan service — tidak ikut `docker compose up` (profile). Pakai:
+  #   docker compose run --rm certbot <perintah>   (lihat ARCHITECTURE § 5)
+  # Tidak join net-* — hanya butuh akses keluar ke Let's Encrypt.
+  certbot:
+    image: certbot/certbot:v5.8.0
+    profiles: ["tools"]
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
 
 networks:
   net-website:
