@@ -17,6 +17,7 @@ csirt-platform/
 │   ├── docker-compose.yml      # Nginx + certbot (profile "tools")
 │   ├── nginx/
 │   │   ├── conf.d/             # Satu file per subdomain + 00-default.conf
+│   │   ├── html/               # Halaman fallback "segera hadir"
 │   │   └── snippets/           # proxy-headers.conf, ssl-params.conf
 │   └── certbot/
 │       ├── www/                # Webroot ACME challenge
