@@ -4,11 +4,11 @@ Repositori platform digital UKM CSIRT — Politeknik Caltex Riau: dokumentasi pr
 
 ## Status Layanan
 
-Per 26 September 2026 — perbarui tabel ini setiap ada perubahan status.
+Per 27 September 2026 — perbarui tabel ini setiap ada perubahan status.
 
 | Platform | URL | Status |
 |---|---|---|
-| Website Profil | https://csirt.pcr.ac.id | HTTPS aktif (Let's Encrypt). Aplikasi belum di-deploy — pengunjung melihat halaman "Segera Hadir" |
+| Website Profil | https://csirt.pcr.ac.id | **Live** sejak 26 September 2026 — Laravel + Filament di container `website` (`apps/website/README.md` § Deploy), HTTPS Let's Encrypt, backup harian |
 | E-Learning | `learn.csirt.pcr.ac.id` | Menunggu DNS record dari pengelola jaringan kampus |
 | CTFd | `ctf.csirt.pcr.ac.id` | Menunggu DNS record dari pengelola jaringan kampus |
 
@@ -37,7 +37,10 @@ csirt-platform/
 │   ├── elearning/              # Belum dibuat
 │   └── ctfd/                   # Belum dibuat
 └── scripts/
-    └── renew-certs.sh          # Perpanjangan sertifikat + reload Nginx (cron user deploy)
+    ├── renew-certs.sh          # Perpanjangan sertifikat + reload Nginx (cron user deploy)
+    ├── deploy-website.sh       # Update website: pull → backup DB → build → migrasi → container baru
+    ├── backup-website.sh       # Backup database + upload website (cron user deploy)
+    └── restore-website.sh      # Pemulihan website dari backup
 ```
 
 ## Alur Kerja Singkat
@@ -57,6 +60,8 @@ Sebagai user `deploy`, dari `/opt/csirt/infra`:
 | Log Nginx | `docker compose logs --tail 50 nginx` |
 | Info & masa berlaku sertifikat | `docker compose run --rm certbot certificates` |
 | Log perpanjangan sertifikat (cron 03:17 & 15:17 UTC) | `tail -n 50 /home/deploy/renew-certs.log` |
+| Deploy update website | `/opt/csirt/scripts/deploy-website.sh` |
+| Log backup website (cron 19:45 UTC) | `tail -n 20 /home/deploy/backup-website.log` |
 
 Perintah yang butuh `sudo` (firewall, akun, paket) dijalankan anggota inti lewat akun pribadinya — lihat `docs/GUIDELINES.md` § 4.
 
