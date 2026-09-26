@@ -40,6 +40,23 @@
             </footer>
         @endif
 
+        @foreach ($albums as $album)
+            {{-- Album galeri yang ditautkan ke tulisan ini (hanya yang terbit) — cuplikan, lengkapnya di halaman album. --}}
+            <section class="mt-10 border-t border-csirt-neutral-100 pt-6" aria-labelledby="album-{{ $album->id }}">
+                <h2 id="album-{{ $album->id }}" class="text-xl font-bold text-csirt-navy">Dokumentasi: {{ $album->title }}</h2>
+                <div class="mt-4 grid grid-cols-3 gap-2">
+                    @foreach ($album->photos as $photo)
+                        <a href="{{ route('galeri.show', $album) }}" class="block aspect-square overflow-hidden rounded-base bg-csirt-neutral-100" tabindex="-1" aria-hidden="true">
+                            <img src="{{ $photo->thumb_url }}" alt="" loading="lazy" class="h-full w-full object-cover">
+                        </a>
+                    @endforeach
+                </div>
+                <p class="mt-3">
+                    <a href="{{ route('galeri.show', $album) }}" class="font-medium text-csirt-primary hover:underline">Lihat semua {{ $album->photos_count }} foto →</a>
+                </p>
+            </section>
+        @endforeach
+
         <p class="mt-10">
             <a href="{{ route('berita.index') }}" class="font-medium text-csirt-primary hover:underline">← Kembali ke Berita & Kegiatan</a>
         </p>

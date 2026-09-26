@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -73,6 +74,16 @@ class Post extends Model implements HasRichContent
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    /**
+     * Album galeri dokumentasi yang ditautkan ke tulisan ini.
+     *
+     * @return HasMany<Album, $this>
+     */
+    public function albums(): HasMany
+    {
+        return $this->hasMany(Album::class);
     }
 
     /**

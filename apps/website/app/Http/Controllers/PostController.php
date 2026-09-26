@@ -45,6 +45,16 @@ class PostController extends Controller
         // Draft dan terjadwal tidak boleh bisa diintip lewat alamatnya.
         abort_unless($post->isPublished(), 404);
 
-        return view('berita.show', ['post' => $post->load(['category', 'tags'])]);
+        return view('berita.show', [
+            'post' => $post->load(['category', 'tags']),
+            // Album dokumentasi yang ditautkan ke tulisan ini: cuplikan 6 foto pertama per album.
+            'albums' => $post->albums()
+                ->published()
+                ->has('photos')
+                ->withCount('photos')
+                ->with(['photos' => fn ($query) => $query->ordered()->limit(6)])
+                ->latest('event_date')
+                ->get(),
+        ]);
     }
 }
