@@ -16,6 +16,11 @@ Aturan proyek (keamanan, Git, kerja remote ke VPS) ada di `CLAUDE.md` di root re
 - `layouts/dashboard.blade.php` — area user Breeze (`/dashboard`, `/profile`) lewat `<x-app-layout>`.
 - `layouts/guest.blade.php` — halaman auth Breeze.
 
+## Fitur
+
+- **Struktur Organisasi** (`/struktur-organisasi`) — data dari Filament (grup menu "Struktur Organisasi"): `BoardPeriod` (hanya satu aktif), `Division`, `BoardMember` (bagian `App\Enums\BoardSection`: pembina/presidium/inti/divisi — urutan case = urutan tampil). Halaman publik hanya menampilkan periode aktif. Foto anggota di disk `public` (`storage/app/public/pengurus`) — butuh `php artisan storage:link`, dan URL foto dibangun dari `APP_URL` (harus benar di setiap environment). File foto otomatis dihapus saat diganti atau anggotanya dihapus.
+  - **Import satu periode:** `php artisan struktur:import <daftar.txt> [--photos=<folder>] [--activate] [--dry-run]` — format file di docblock `App\Support\BoardRoster\RosterParser`; foto bernama `<Str::slug(nama)>.jpg|png|webp`, diluruskan (EXIF), dipotong persegi 600×600, di-encode ulang ke JPEG (metadata terbuang; butuh ekstensi PHP `gd` + `exif`). Aman dijalankan ulang (dicocokkan lewat slug nama). **File daftar dan foto asli jangan di-commit** — data pribadi; tes memakai nama fiktif.
+
 ## Aturan khusus
 
 - **Animasi GSAP tidak boleh membuat konten tertahan tersembunyi.** Animasi `from` (mulai dari `opacity: 0`) perlu pengaman `setTimeout(() => tween.progress(1), …)` — renderer headless (mesin pencari, pratinjau) tidak menjalankan frame animasi. Hormati `prefers-reduced-motion`. Lihat contoh di `resources/js/app.js`.

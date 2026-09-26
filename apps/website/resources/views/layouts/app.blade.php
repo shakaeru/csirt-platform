@@ -5,11 +5,11 @@
     Warna hanya dari design tokens (kelas csirt-*), bukan warna default Tailwind.
 --}}
 @php
-    // Rute selain Beranda menyusul — sementara '#'.
+    // Item dengan href '#' = halamannya menyusul.
     $navItems = [
         ['label' => 'Beranda', 'href' => route('home'), 'active' => request()->routeIs('home')],
         ['label' => 'Tentang', 'href' => '#'],
-        ['label' => 'Struktur Organisasi', 'href' => '#'],
+        ['label' => 'Struktur Organisasi', 'href' => route('struktur-organisasi'), 'active' => request()->routeIs('struktur-organisasi')],
         ['label' => 'Berita & Kegiatan', 'href' => '#'],
         ['label' => 'Prestasi', 'href' => '#'],
         ['label' => 'Kontak', 'href' => '#'],
