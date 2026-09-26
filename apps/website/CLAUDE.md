@@ -10,8 +10,15 @@ Aturan proyek (keamanan, Git, kerja remote ke VPS) ada di `CLAUDE.md` di root re
 - Tailwind CSS **v4** lewat `@tailwindcss/vite`. Tidak ada `tailwind.config.js`: token warna ada di blok `@theme` pada `resources/css/app.css`, disalin dari `assets/brand/design-tokens.css` (sumber kebenaran, di root repo).
 - Flowbite 4 (plugin CSS + JS di-bundle dari npm, bukan CDN) dan GSAP (`window.gsap`).
 
+## Layout
+
+- `layouts/app.blade.php` — **layout utama situs publik** (navbar Flowbite + footer) dan default layout Livewire 4 (`layouts::app`). Halaman: `@extends('layouts.app')` + `@section('content')`; judul tab opsional lewat `@extends('layouts.app', ['title' => '...'])`.
+- `layouts/dashboard.blade.php` — area user Breeze (`/dashboard`, `/profile`) lewat `<x-app-layout>`.
+- `layouts/guest.blade.php` — halaman auth Breeze.
+
 ## Aturan khusus
 
+- **Animasi GSAP tidak boleh membuat konten tertahan tersembunyi.** Animasi `from` (mulai dari `opacity: 0`) perlu pengaman `setTimeout(() => tween.progress(1), …)` — renderer headless (mesin pencari, pratinjau) tidak menjalankan frame animasi. Hormati `prefers-reduced-motion`. Lihat contoh di `resources/js/app.js`.
 - **Alpine jangan di-import di `resources/js/app.js`.** Livewire sudah membawa dan menjalankan Alpine sendiri; import terpisah = dua instance Alpine.
 - **Warna pakai kelas `csirt-*`** (`bg-csirt-primary`, `text-csirt-navy`, dst.), bukan warna default Tailwind (`blue-600`, dsb.).
 - Aset yang dipakai halaman (logo, gambar) disalin ke `public/images/`; jangan merujuk langsung ke `assets/brand/` di luar aplikasi.
