@@ -1,35 +1,38 @@
 # csirt-platform
 
-Monorepo untuk 3 platform digital UKM CSIRT — Politeknik Caltex Riau.
+Repositori platform digital UKM CSIRT — Politeknik Caltex Riau: dokumentasi proyek dan infrastruktur bersama (reverse proxy, TLS). Struktur kode aplikasi — tetap di repo ini (monorepo) atau repo terpisah per aplikasi — belum diputuskan (lihat `CLAUDE.md`).
 
 ## Struktur Direktori
 
 ```
 csirt-platform/
-├── README.md                  # File ini
-├── CLAUDE.md                  # Instruksi untuk Claude Code (baca dulu sebelum kerja)
-├── .gitignore
-├── .env.example                # Template variabel environment (jangan isi nilai asli di sini)
+├── README.md                   # File ini
+├── CLAUDE.md                   # Instruksi untuk Claude Code (baca dulu sebelum kerja)
+├── .gitignore                  # .env, kunci privat, sertifikat, state certbot
 ├── docs/
 │   ├── PRD.md                  # Product Requirements Document
-│   └── GUIDELINES.md           # Aturan dasar proyek & workflow tim
-├── infra/
-│   ├── docker-compose.yml      # Reverse proxy bersama (nginx/traefik + TLS)
-│   └── proxy/                  # Konfigurasi reverse proxy
-├── apps/
-│   ├── website/                # Website profil UKM
-│   ├── elearning/               # Platform e-learning
-│   │   └── docker-compose.yml
-│   └── ctfd/                   # Platform CTFd
-│       └── docker-compose.yml
+│   ├── GUIDELINES.md           # Aturan tim, akses SSH, workflow, insiden CTFd
+│   └── ARCHITECTURE.md         # Domain, topologi Docker, Nginx, TLS
+├── infra/                      # Reverse proxy bersama — satu-satunya yang publish port 80/443
+│   ├── docker-compose.yml      # Nginx + certbot (profile "tools")
+│   ├── nginx/
+│   │   ├── conf.d/             # Satu file per subdomain + 00-default.conf
+│   │   └── snippets/           # proxy-headers.conf, ssl-params.conf
+│   └── certbot/
+│       ├── www/                # Webroot ACME challenge
+│       └── conf/               # Sertifikat & akun Let's Encrypt — tidak di-commit
+├── apps/                       # Belum dibuat — tiap aplikasi punya docker-compose.yml
+│   ├── website/                #   dan .env.example sendiri (GUIDELINES § 3)
+│   ├── elearning/
+│   └── ctfd/
 └── scripts/
-    └── deploy.sh                # Skrip bantu deployment ke VPS
+    └── renew-certs.sh          # Perpanjangan sertifikat + reload Nginx (cron user deploy)
 ```
 
 ## Alur Kerja Singkat
 
 1. Kerja & edit kode dari WSL lokal (Claude Code jalan di sini, remote ke VPS lewat SSH untuk tugas infra).
 2. Commit & push ke branch `feature/...`, merge ke `dev`, lalu ke `main` lewat Pull Request.
-3. Di VPS: `git pull` lalu `docker compose up -d` pada sub-aplikasi yang berubah.
+3. Di VPS (user `deploy`, repo di `/opt/csirt`): `git -C /opt/csirt pull --ff-only`, lalu `docker compose up -d` di folder yang berubah (`infra/` atau `apps/<nama>`). Untuk `infra/`, jalankan `nginx -t` dulu — lihat `docs/ARCHITECTURE.md` § 2 "Risiko yang tersisa".
 
-Detail lengkap: lihat `docs/PRD.md` (requirements) dan `docs/GUIDELINES.md` (aturan tim & environment).
+Detail lengkap: `docs/PRD.md` (requirements), `docs/GUIDELINES.md` (aturan tim & environment), `docs/ARCHITECTURE.md` (infrastruktur).
