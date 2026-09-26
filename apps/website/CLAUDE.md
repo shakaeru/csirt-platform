@@ -27,7 +27,7 @@ Aturan proyek (keamanan, Git, kerja remote ke VPS) ada di `CLAUDE.md` di root re
 - **Alpine jangan di-import di `resources/js/app.js`.** Livewire sudah membawa dan menjalankan Alpine sendiri; import terpisah = dua instance Alpine.
 - **Warna pakai kelas `csirt-*`** (`bg-csirt-primary`, `text-csirt-navy`, dst.), bukan warna default Tailwind (`blue-600`, dsb.).
 - Aset yang dipakai halaman (logo, gambar) disalin ke `public/images/`; jangan merujuk langsung ke `assets/brand/` di luar aplikasi.
-- **Sebelum deploy ke production:** `App\Models\User` wajib mengimplementasikan `Filament\Models\Contracts\FilamentUser::canAccessPanel()`. Di luar environment `local`, Filament menolak (403) semua user yang belum lolos pengecekan ini — aman sebagai default, tapi admin pun tidak bisa masuk.
+- **Akses panel admin (`/admin`):** hanya email di `ADMIN_EMAILS` (`.env`, dipisah koma — email tidak disimpan di repo) **dan** sudah terverifikasi — lihat `User::canAccessPanel()`. Berlaku di semua environment, termasuk local. Akun admin dibuat dengan `php artisan admin:create <email>` (password lewat prompt tersembunyi; akun langsung terverifikasi). Syarat terverifikasi mencegah orang lain mendaftar lebih dulu lewat `/register` memakai email admin; menjalankan `admin:create` untuk email yang sudah terdaftar mengambil alih akunnya (password baru, sesi lama diputus). Di tes: `$this->actingAsAdmin()`.
 
 ## Perintah
 
