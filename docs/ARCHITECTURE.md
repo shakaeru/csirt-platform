@@ -178,6 +178,21 @@ server {
 
 Catatan penting untuk CTFd: set `REVERSE_PROXY=True` (atau `1,1,1,1,1`) di environment variable CTFd sesuai dokumentasi resminya, supaya CTFd membaca IP asli peserta dari header `X-Forwarded-For`, bukan IP internal Nginx — ini relevan untuk rate-limiting dan audit log CSIRT.
 
+### Batas ukuran upload (Website & E-Learning)
+
+Batas body request dibuat kecil secara default (`client_max_body_size 1m`) dan hanya dilonggarkan di endpoint upload sementara Livewire/Filament — bukan di seluruh server — supaya endpoint publik (form kontak, login) tidak bisa dibanjiri body besar. Livewire 4 memakai prefix hash dari `APP_KEY` (`/livewire-<8 hex>/upload-file`), jadi Nginx mencocokkannya dengan regex — lihat `infra/nginx/conf.d/website.conf`.
+
+Batas ini berlapis dan **harus diselaraskan** setiap kali salah satunya diubah:
+
+| Lapisan | Setting | Nilai |
+|---|---|---|
+| Nginx edge (`infra/`) | `client_max_body_size` di location upload | `13m` |
+| Container `apps/website` (web server + PHP) | `client_max_body_size`, `post_max_size`, `upload_max_filesize` | ≥ 13M, ≥ 13M, ≥ 12M |
+| Livewire | `temporary_file_upload.rules` | `max:12288` (default, 12 MB) |
+| Filament | `FileUpload::maxSize()` | ≤ 12288 KB |
+
+Rekomendasi untuk development `apps/website`: aktifkan resize gambar di sisi browser sebelum upload (fitur resize pada komponen `FileUpload` Filament — cek nama method sesuai versi Filament yang dipakai). Foto kamera ponsel 5–12 MB bisa turun ke ratusan KB, sehingga upload lebih cepat, storage lebih hemat, dan batas di atas jarang tersentuh.
+
 ## 5. TLS / HTTPS
 
 Karena ketiga subdomain berada di bawah domain yang sama, satu sertifikat Let's Encrypt bisa mencakup semuanya sekaligus (multi-SAN certificate), tanpa perlu wildcard:
