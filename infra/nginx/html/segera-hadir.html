@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Segera Hadir — UKM CSIRT Politeknik Caltex Riau</title>
+<!-- Halaman fallback Nginx (infra/): tampil saat container website belum ada / tidak bisa
+     dijangkau. Mandiri — tanpa JS, font, atau aset eksternal. Lihat docs/ARCHITECTURE.md § 4. -->
+<style>
+  :root { --bg:#0b1020; --fg:#e6edf3; --muted:#9aa7b4; --accent:#3fb950; --panel:#111a2e; --border:#1f2a44; }
+  @media (prefers-color-scheme: light) {
+    :root { --bg:#f6f8fa; --fg:#1f2328; --muted:#57606a; --accent:#1a7f37; --panel:#ffffff; --border:#d0d7de; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: grid; place-items: center; padding: 24px 16px;
+    background: var(--bg); color: var(--fg);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  main { width: 100%; max-width: 560px; text-align: center; }
+  .mark { width: 64px; height: 64px; margin: 0 auto 20px; color: var(--accent); }
+  p { margin: 0 0 1.5em; color: var(--muted); }
+  .org { margin: 0; font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; }
+  h1 { margin: .25em 0 .4em; font-size: clamp(2rem, 6vw, 2.75rem); line-height: 1.15; }
+  .term {
+    display: inline-block; max-width: 100%; padding: 10px 16px; text-align: left;
+    border: 1px solid var(--border); border-radius: 8px; background: var(--panel);
+    font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow-wrap: anywhere;
+  }
+  .term .p { color: var(--accent); }
+  .cursor {
+    display: inline-block; width: .6em; height: 1.1em; margin-left: 2px; vertical-align: -.15em;
+    background: var(--accent); animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+</style>
+</head>
+<body>
+<main>
+  <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12 2.5 4 5.5v6c0 5 3.4 8.9 8 10 4.6-1.1 8-5 8-10v-6l-8-3Z"/>
+    <path d="m8.5 12 2.5 2.5 4.5-5"/>
+  </svg>
+  <p class="org">UKM CSIRT · Politeknik Caltex Riau</p>
+  <h1>Segera Hadir</h1>
+  <p>Website resmi UKM CSIRT (Computer Security Incident Response Team) Politeknik Caltex Riau sedang disiapkan. Silakan kembali lagi nanti.</p>
+  <div class="term" role="img" aria-label="Status: sedang disiapkan"><span class="p">$</span> status csirt.pcr.ac.id<br>sedang disiapkan<span class="cursor"></span></div>
+</main>
+</body>
+</html>
