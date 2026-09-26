@@ -32,10 +32,10 @@ csirt-platform/
 │   └── certbot/
 │       ├── www/                # Webroot ACME challenge
 │       └── conf/               # Sertifikat & akun Let's Encrypt — tidak di-commit
-├── apps/                       # Belum dibuat — tiap aplikasi punya docker-compose.yml
-│   ├── website/                #   dan .env.example sendiri (GUIDELINES § 3)
-│   ├── elearning/
-│   └── ctfd/
+├── apps/                       # Tiap aplikasi punya .env.example sendiri (GUIDELINES § 3)
+│   ├── website/                # Laravel 13 + Livewire 4 (Breeze/Volt) + Filament 5 — lihat apps/website/CLAUDE.md
+│   ├── elearning/              # Belum dibuat
+│   └── ctfd/                   # Belum dibuat
 └── scripts/
     └── renew-certs.sh          # Perpanjangan sertifikat + reload Nginx (cron user deploy)
 ```
