@@ -127,14 +127,19 @@ networks:
 Struktur file di `infra/`:
 ```
 infra/
-├── docker-compose.yml
+├── docker-compose.yml          # nginx + certbot (profile "tools")
+├── certbot/
+│   ├── www/                    # webroot ACME challenge (di-commit, kosong)
+│   └── conf/                   # sertifikat & akun Let's Encrypt — di-ignore git, owner root
 └── nginx/
     ├── conf.d/
+    │   ├── 00-default.conf     # tolak Host (80) & SNI (443) yang tidak dikenal
     │   ├── website.conf
     │   ├── elearning.conf
     │   └── ctfd.conf
     └── snippets/
-        └── proxy-headers.conf
+        ├── proxy-headers.conf
+        └── ssl-params.conf     # profil TLS intermediate Mozilla
 ```
 
 `infra/nginx/snippets/proxy-headers.conf` (dipakai bersama oleh ketiga config):
@@ -153,15 +158,23 @@ proxy_set_header Connection "upgrade";
 server {
     listen 80;
     server_name ctf.csirt.pcr.ac.id;
-    return 301 https://$host$request_uri;
+
+    location /.well-known/acme-challenge/ {   # perpanjangan sertifikat (§ 5)
+        root /var/www/certbot;
+    }
+    location / {
+        return 301 https://ctf.csirt.pcr.ac.id$request_uri;
+    }
 }
 
 server {
     listen 443 ssl;
+    http2 on;
     server_name ctf.csirt.pcr.ac.id;
 
     ssl_certificate     /etc/letsencrypt/live/csirt.pcr.ac.id/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/csirt.pcr.ac.id/privkey.pem;
+    include /etc/nginx/snippets/ssl-params.conf;
 
     client_max_body_size 50M;   # CTFd sering upload file challenge berukuran besar
 
@@ -195,18 +208,31 @@ Rekomendasi untuk development `apps/website`: aktifkan resize gambar di sisi bro
 
 ## 5. TLS / HTTPS
 
-Karena ketiga subdomain berada di bawah domain yang sama, satu sertifikat Let's Encrypt bisa mencakup semuanya sekaligus (multi-SAN certificate), tanpa perlu wildcard:
+Satu sertifikat Let's Encrypt (multi-SAN, nama sertifikat `csirt.pcr.ac.id`) untuk semua subdomain, diterbitkan lewat certbot **dalam container** (service `certbot` di `infra/docker-compose.yml`, profile `tools`) dengan metode **webroot**. `certbot --nginx` tidak bisa dipakai karena Nginx berjalan di container, bukan di host.
+
+Subdomain ditambahkan ke sertifikat bertahap, begitu DNS-nya aktif — certbot baru bisa memverifikasi domain (HTTP-01) setelah record-nya mengarah ke VPS (§ 3). Semua perintah dijalankan dari `/opt/csirt/infra` sebagai `deploy` (tanpa `sudo`):
 
 ```bash
-sudo certbot certonly --nginx \
-  -d csirt.pcr.ac.id \
-  -d learn.csirt.pcr.ac.id \
-  -d ctf.csirt.pcr.ac.id
+# Uji dulu ke server staging (tidak menerbitkan sertifikat, tidak memakan rate limit)
+docker compose run --rm certbot certonly --webroot -w /var/www/certbot \
+  --cert-name csirt.pcr.ac.id -d csirt.pcr.ac.id --dry-run
+
+# Penerbitan awal — saat ini hanya csirt.pcr.ac.id yang DNS-nya aktif
+docker compose run --rm certbot certonly --webroot -w /var/www/certbot \
+  --cert-name csirt.pcr.ac.id -d csirt.pcr.ac.id
+
+# Saat learn.* / ctf.* aktif: perluas sertifikat yang sama (path di Nginx tidak berubah)
+docker compose run --rm certbot certonly --webroot -w /var/www/certbot \
+  --cert-name csirt.pcr.ac.id --expand \
+  -d csirt.pcr.ac.id -d learn.csirt.pcr.ac.id -d ctf.csirt.pcr.ac.id
 ```
 
-[Pasti] Certbot baru bisa memverifikasi domain (HTTP-01 challenge) setelah DNS record subdomain-nya benar-benar aktif dan mengarah ke VPS — jadi langkah ini menunggu § 3 selesai.
+- **Penyimpanan:** sertifikat, private key, dan akun ACME di `infra/certbot/conf/` — di-ignore git, owner root; Nginx me-mount-nya read-only.
+- **Perpanjangan:** cron user `deploy` menjalankan `scripts/renew-certs.sh` 2x sehari (`certbot renew`, lalu `nginx -t` dan reload graceful).
+- **Pemantauan:** Let's Encrypt tidak lagi mengirim email pengingat kedaluwarsa (sejak 2025) — pantau masa berlaku sertifikat lewat monitoring (mis. Uptime Kuma). OCSP stapling tidak dipakai karena Let's Encrypt sudah menghentikan OCSP.
+- **HSTS:** dimulai `max-age` pendek tanpa `includeSubDomains`; naikkan setelah HTTPS stabil, dan tambahkan `includeSubDomains` hanya setelah semua subdomain HTTPS.
+- **Default server 443:** `ssl_reject_handshake` menolak SNI yang tidak dikenal, jadi akses lewat IP tidak menerima sertifikat apa pun.
 
 ## 6. Yang Masih Perlu Diputuskan
 
 - Apakah root domain (`csirt.pcr.ac.id`) untuk Website Profil, atau justru dipakai sebagai landing page yang mengarahkan ke ketiga subdomain? [ISI DI SINI]
-- Auto-renewal certbot: pastikan `systemctl status certbot.timer` aktif setelah setup awal.
