@@ -73,8 +73,9 @@ class CreateAdmin extends Command
             'remember_token' => Str::random(60), // cookie "ingat saya" lama tidak berlaku lagi
         ])->save();
 
-        // Akun yang sudah ada (mis. didaftarkan orang lain lewat /register dengan email admin):
-        // putus sesinya supaya pemilik lama tidak tetap login setelah password direset.
+        // Akun yang sudah ada (mis. dibuat orang lain memakai email admin — /register sudah ditutup,
+        // tapi akun lama bisa saja tersisa): putus sesinya supaya pemilik lama tidak tetap login
+        // setelah password direset.
         $sessions = config('session.driver') === 'database'
             ? DB::table(config('session.table', 'sessions'))->where('user_id', $user->getKey())->delete()
             : 0;

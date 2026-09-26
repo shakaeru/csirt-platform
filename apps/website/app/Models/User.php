@@ -22,9 +22,11 @@ class User extends Authenticatable implements FilamentUser
 
     /**
      * Panel admin: hanya email di ADMIN_EMAILS (config/csirt.php) yang sudah terverifikasi —
-     * berlaku di semua environment, termasuk local. Syarat terverifikasi mencegah orang lain
-     * mendaftar lebih dulu lewat /register memakai email admin; akun admin dibuat dengan
-     * `php artisan admin:create`, yang langsung menandainya terverifikasi.
+     * berlaku di semua environment, termasuk local. Akun admin dibuat dengan
+     * `php artisan admin:create`, yang langsung menandainya terverifikasi. Pendaftaran publik
+     * (/register) sudah ditutup; syarat terverifikasi tetap dipertahankan sebagai lapis kedua —
+     * kalau pendaftaran dibuka lagi, akun yang didaftarkan orang lain memakai email admin
+     * tidak otomatis bisa masuk panel.
      */
     public function canAccessPanel(Panel $panel): bool
     {

@@ -73,9 +73,9 @@ class AdminAccessTest extends TestCase
     }
 
     /**
-     * Seseorang mendaftar lebih dulu lewat /register memakai email admin. Akun itu tidak bisa masuk
-     * panel (belum terverifikasi); admin:create mengambil alih: password baru, terverifikasi, dan
-     * sesi pendaftar lama diputus.
+     * Akun memakai email admin sudah ada tapi dibuat orang lain (mis. sisa sebelum /register ditutup).
+     * Akun itu tidak bisa masuk panel (belum terverifikasi); admin:create mengambil alih: password
+     * baru, terverifikasi, dan sesi pemilik lama diputus.
      */
     public function test_admin_create_mengambil_alih_akun_yang_didaftarkan_orang_lain(): void
     {

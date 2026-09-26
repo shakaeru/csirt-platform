@@ -2,35 +2,19 @@
 
 namespace Tests\Feature\Auth;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Volt\Volt;
+use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
+/**
+ * Pendaftaran akun publik ditutup (lihat routes/auth.php) — akun dibuat operator.
+ */
 class RegistrationTest extends TestCase
 {
-    use RefreshDatabase;
-
-    public function test_registration_screen_can_be_rendered(): void
+    public function test_pendaftaran_publik_ditutup(): void
     {
-        $response = $this->get('/register');
-
-        $response
-            ->assertOk()
-            ->assertSeeVolt('pages.auth.register');
-    }
-
-    public function test_new_users_can_register(): void
-    {
-        $component = Volt::test('pages.auth.register')
-            ->set('name', 'Test User')
-            ->set('email', 'test@example.com')
-            ->set('password', 'password')
-            ->set('password_confirmation', 'password');
-
-        $component->call('register');
-
-        $component->assertRedirect(route('dashboard', absolute: false));
-
-        $this->assertAuthenticated();
+        $this->assertFalse(Route::has('register'));
+        $this->get('/register')->assertNotFound();
+        $this->post('/register', ['email' => 'x@example.com'])->assertNotFound();
+        $this->assertFileDoesNotExist(resource_path('views/livewire/pages/auth/register.blade.php'));
     }
 }
