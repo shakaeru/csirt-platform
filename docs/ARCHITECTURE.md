@@ -137,10 +137,14 @@ infra/
     │   ├── website.conf
     │   ├── elearning.conf
     │   └── ctfd.conf
+    ├── html/
+    │   └── segera-hadir.html   # halaman fallback saat aplikasi tidak bisa dijangkau
     └── snippets/
         ├── proxy-headers.conf
         └── ssl-params.conf     # profil TLS intermediate Mozilla
 ```
+
+**Halaman fallback.** Kalau container aplikasi belum ada atau mati, Nginx menampilkan `html/segera-hadir.html` dengan status `503` (`error_page 502 504 =503`), bukan halaman error mentah. Hanya error buatan Nginx sendiri yang ditangkap — respons error dari aplikasi tetap diteruskan apa adanya. Begitu aplikasi berjalan, halaman ini otomatis tidak tampil lagi. Pola yang sama bisa dipakai untuk halaman pemeliharaan CTFd (GUIDELINES § 6). Location fallback sengaja tanpa `add_header`: di Nginx, satu `add_header` di level location membuat semua `add_header` dari level server (termasuk HSTS) tidak terwarisi.
 
 `infra/nginx/snippets/proxy-headers.conf` (dipakai bersama oleh ketiga config):
 ```nginx
