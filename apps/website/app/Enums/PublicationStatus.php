@@ -6,7 +6,7 @@ use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 
 /**
- * Status terbit tulisan/album — tidak disimpan, diturunkan dari published_at (lihat HasPublication):
+ * Status terbit tulisan/album/prestasi — tidak disimpan, diturunkan dari published_at (lihat HasPublication):
  * null = draft, masa depan = terjadwal, sudah lewat = terbit. Jadwal terbit jalan tanpa cron.
  */
 enum PublicationStatus: string implements HasColor, HasLabel

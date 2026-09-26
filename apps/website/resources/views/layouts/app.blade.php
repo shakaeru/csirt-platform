@@ -12,7 +12,7 @@
         ['label' => 'Struktur Organisasi', 'href' => route('struktur-organisasi'), 'active' => request()->routeIs('struktur-organisasi')],
         ['label' => 'Berita & Kegiatan', 'href' => route('berita.index'), 'active' => request()->routeIs('berita.*')],
         ['label' => 'Galeri', 'href' => route('galeri.index'), 'active' => request()->routeIs('galeri.*')],
-        ['label' => 'Prestasi', 'href' => '#'],
+        ['label' => 'Prestasi', 'href' => route('prestasi'), 'active' => request()->routeIs('prestasi')],
         ['label' => 'Kontak', 'href' => '#'],
     ];
 @endphp

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
- * Status terbit dari kolom published_at (dipakai Post dan Album): null = draft, masa depan =
+ * Status terbit dari kolom published_at (dipakai Post, Album, Achievement): null = draft, masa depan =
  * terjadwal, sudah lewat = terbit. Tanpa cron — yang terjadwal tampil sendiri begitu waktunya lewat.
  */
 trait HasPublication
