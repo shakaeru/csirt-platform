@@ -62,3 +62,24 @@
   .post-content th, .post-content td { border: 1px solid var(--color-csirt-neutral-100); padding: 0.5em 0.75em; text-align: start; }
   .post-content th { background: var(--color-csirt-neutral-100); font-weight: 600; }
 }
+
+/* Lightbox galeri (PhotoSwipe, resources/js/gallery.js): latar navy brand + keterangan foto.
+   Sengaja di luar @layer dan dengan selektor `html .pswp`: CSS PhotoSwipe dimuat belakangan
+   (dynamic import) dan tidak ber-layer, jadi harus menang lewat spesifisitas. */
+html .pswp {
+  --pswp-bg: var(--color-csirt-navy);
+  --pswp-placeholder-bg: var(--color-csirt-navy);
+  --pswp-icon-color: var(--color-csirt-white);
+  --pswp-icon-color-secondary: var(--color-csirt-navy);
+}
+html .pswp__caption {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--color-csirt-navy) 85%, transparent);
+  color: var(--color-csirt-white);
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}

@@ -11,6 +11,7 @@
         ['label' => 'Tentang', 'href' => '#'],
         ['label' => 'Struktur Organisasi', 'href' => route('struktur-organisasi'), 'active' => request()->routeIs('struktur-organisasi')],
         ['label' => 'Berita & Kegiatan', 'href' => route('berita.index'), 'active' => request()->routeIs('berita.*')],
+        ['label' => 'Galeri', 'href' => route('galeri.index'), 'active' => request()->routeIs('galeri.*')],
         ['label' => 'Prestasi', 'href' => '#'],
         ['label' => 'Kontak', 'href' => '#'],
     ];
@@ -31,7 +32,7 @@
 </head>
 <body class="flex min-h-screen flex-col bg-csirt-white font-sans text-csirt-neutral-900 antialiased">
     {{-- Navbar: komponen "Default navbar" Flowbite v4, warna dipetakan ke token csirt-*.
-         Breakpoint menu horizontal dinaikkan md → lg karena ada 6 item. --}}
+         Breakpoint menu horizontal dinaikkan md → lg karena ada 7 item. --}}
     <nav data-animate="navbar" class="sticky top-0 z-20 w-full border-b border-csirt-neutral-100 bg-csirt-white">
         <div class="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between p-4">
             <a href="{{ route('home') }}" class="flex items-center">

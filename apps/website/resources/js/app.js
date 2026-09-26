@@ -18,3 +18,9 @@ if (navbar && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     // Setelah 1,5 detik paksa ke kondisi akhir; di browser normal animasi sudah selesai.
     setTimeout(() => intro.progress(1), 1500);
 }
+
+// Galeri: lightbox PhotoSwipe hanya dimuat di halaman yang membutuhkannya (code-splitting Vite).
+const gallery = document.querySelector('[data-gallery]');
+if (gallery) {
+    import('./gallery').then(({ initGallery }) => initGallery(gallery));
+}

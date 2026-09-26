@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Resources\Posts\Tables;
+namespace App\Filament\Resources\Albums\Tables;
 
 use App\Enums\PublicationStatus;
-use App\Models\Post;
+use App\Models\Album;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -16,43 +16,47 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-class PostsTable
+class AlbumsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['cover', 'post'])->withCount('photos'))
             ->columns([
-                ImageColumn::make('cover_path')
+                ImageColumn::make('cover.thumb_path')
                     ->label('Sampul')
-                    ->disk(Post::COVER_DISK),
+                    ->disk(Album::DISK),
                 TextColumn::make('title')
                     ->label('Judul')
                     ->searchable()
                     ->sortable()
                     ->limit(60),
-                TextColumn::make('category.name')
-                    ->label('Kategori')
-                    ->badge(),
+                TextColumn::make('photos_count')
+                    ->label('Foto')
+                    ->numeric()
+                    ->sortable(),
                 TextColumn::make('status')
                     ->label('Status')
-                    ->state(fn (Post $record): PublicationStatus => $record->status())
+                    ->state(fn (Album $record): PublicationStatus => $record->status())
                     ->badge(),
+                TextColumn::make('event_date')
+                    ->label('Tanggal kegiatan')
+                    ->date('j M Y')
+                    ->sortable(),
+                TextColumn::make('post.title')
+                    ->label('Tulisan terkait')
+                    ->placeholder('—')
+                    ->limit(40)
+                    ->toggleable(),
                 TextColumn::make('published_at')
                     ->label('Terbit pada')
                     ->dateTime('j M Y, H:i')
                     ->placeholder('—')
-                    ->sortable(),
-                TextColumn::make('updated_at')
-                    ->label('Diubah')
-                    ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->defaultSort('updated_at', 'desc')
+            ->defaultSort('event_date', 'desc')
             ->filters([
-                SelectFilter::make('category')
-                    ->label('Kategori')
-                    ->relationship('category', 'name'),
                 SelectFilter::make('status')
                     ->label('Status')
                     ->options(PublicationStatus::class)
@@ -64,15 +68,18 @@ class PostsTable
                 Action::make('lihat')
                     ->label('Lihat')
                     ->icon(Heroicon::OutlinedArrowTopRightOnSquare)
-                    ->url(fn (Post $record): string => route('berita.show', $record))
+                    ->url(fn (Album $record): string => route('galeri.show', $record))
                     ->openUrlInNewTab()
-                    ->visible(fn (Post $record): bool => $record->isPublished()),
+                    ->visible(fn (Album $record): bool => $record->isPublished()),
                 EditAction::make(),
-                DeleteAction::make(),
+                // Menghapus album ikut menghapus semua fotonya (baris dan file).
+                DeleteAction::make()
+                    ->modalDescription('Semua foto di album ini ikut terhapus permanen.'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->modalDescription('Semua foto di album-album ini ikut terhapus permanen.'),
                 ]),
             ]);
     }

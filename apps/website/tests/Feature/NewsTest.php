@@ -2,8 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Enums\PostStatus;
+use App\Enums\PublicationStatus;
 use App\Filament\Resources\Posts\Pages\CreatePost;
+use App\Filament\Resources\Posts\Pages\ListPosts;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
@@ -72,9 +73,9 @@ class NewsTest extends TestCase
 
     public function test_status_dan_ringkasan(): void
     {
-        $this->assertSame(PostStatus::Draft, Post::factory()->draft()->make()->status());
-        $this->assertSame(PostStatus::Scheduled, Post::factory()->scheduled()->make()->status());
-        $this->assertSame(PostStatus::Published, Post::factory()->make()->status());
+        $this->assertSame(PublicationStatus::Draft, Post::factory()->draft()->make()->status());
+        $this->assertSame(PublicationStatus::Scheduled, Post::factory()->scheduled()->make()->status());
+        $this->assertSame(PublicationStatus::Published, Post::factory()->make()->status());
 
         $this->assertSame('Ringkasan manual', Post::factory()->make(['excerpt' => 'Ringkasan manual'])->summary);
         $this->assertSame('Tom & Jerry di CTF', Post::factory()->make(['excerpt' => null, 'content' => '<p>Tom &amp; Jerry <strong>di</strong> CTF</p>'])->summary);
@@ -104,6 +105,22 @@ class NewsTest extends TestCase
         }
     }
 
+    public function test_filter_status_di_tabel_admin(): void
+    {
+        $this->actingAsAdmin();
+        $published = Post::factory()->create();
+        $draft = Post::factory()->draft()->create();
+        $scheduled = Post::factory()->scheduled()->create();
+
+        Livewire::test(ListPosts::class)
+            ->filterTable('status', PublicationStatus::Scheduled->value)
+            ->assertCanSeeTableRecords([$scheduled])
+            ->assertCanNotSeeTableRecords([$published, $draft])
+            ->filterTable('status', PublicationStatus::Published->value)
+            ->assertCanSeeTableRecords([$published])
+            ->assertCanNotSeeTableRecords([$draft, $scheduled]);
+    }
+
     /** Admin mengisi jam terbit dalam WIB; database menyimpan UTC (WIB = UTC+7). */
     public function test_admin_membuat_tulisan_terjadwal_dengan_jam_wib(): void
     {
@@ -124,7 +141,7 @@ class NewsTest extends TestCase
 
         $post = Post::query()->where('slug', 'jadwal-pelatihan-oktober')->sole();
         $this->assertSame('2030-10-01 01:00:00', $post->published_at->utc()->format('Y-m-d H:i:s'));
-        $this->assertSame(PostStatus::Scheduled, $post->status());
+        $this->assertSame(PublicationStatus::Scheduled, $post->status());
         $this->assertSame(['Pelatihan'], $post->tags->pluck('name')->all());
     }
 
