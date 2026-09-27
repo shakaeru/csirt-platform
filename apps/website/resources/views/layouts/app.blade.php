@@ -8,7 +8,7 @@
     // Item dengan href '#' = halamannya menyusul.
     $navItems = [
         ['label' => 'Beranda', 'href' => route('home'), 'active' => request()->routeIs('home')],
-        ['label' => 'Tentang', 'href' => '#'],
+        ['label' => 'Tentang', 'href' => route('tentang'), 'active' => request()->routeIs('tentang')],
         ['label' => 'Struktur Organisasi', 'href' => route('struktur-organisasi'), 'active' => request()->routeIs('struktur-organisasi')],
         ['label' => 'Berita & Kegiatan', 'href' => route('berita.index'), 'active' => request()->routeIs('berita.*')],
         ['label' => 'Galeri', 'href' => route('galeri.index'), 'active' => request()->routeIs('galeri.*')],
