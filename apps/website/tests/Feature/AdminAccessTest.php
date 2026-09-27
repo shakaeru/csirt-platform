@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Console\Commands\CreateAdmin;
+use App\Models\Role;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,25 +25,28 @@ class AdminAccessTest extends TestCase
         config(['csirt.admin_emails' => [self::ADMIN]]);
     }
 
-    public function test_email_terdaftar_dan_terverifikasi_bisa_masuk_panel(): void
+    /** Sejak RBAC: akses panel = email terverifikasi + punya role; ADMIN_EMAILS tidak lagi menentukan. */
+    public function test_pengguna_terverifikasi_dengan_role_bisa_masuk_panel(): void
     {
-        // Pencocokan email tidak peka huruf besar/kecil.
-        $this->actingAs(User::factory()->create(['email' => 'Admin@CSIRT.test']))->get('/admin')->assertOk();
+        $this->actingAs(User::factory()->create(['email' => 'editor@csirt.test', 'role_id' => Role::query()->where('name', 'Editor')->value('id')]))
+            ->get('/admin')
+            ->assertOk();
     }
 
-    public function test_email_terdaftar_tapi_belum_terverifikasi_ditolak(): void
+    public function test_tanpa_role_ditolak_walau_email_ada_di_admin_emails(): void
     {
-        $this->actingAs(User::factory()->unverified()->create(['email' => self::ADMIN]))->get('/admin')->assertForbidden();
+        $this->actingAs(User::factory()->create(['email' => self::ADMIN]))->get('/admin')->assertForbidden();
     }
 
-    public function test_email_di_luar_daftar_ditolak_termasuk_di_env_local(): void
+    public function test_punya_role_tapi_belum_terverifikasi_ditolak(): void
     {
-        $user = User::factory()->create(['email' => 'orang@lain.test']);
+        $this->actingAs(User::factory()->unverified()->create(['role_id' => Role::super()->getKey()]))->get('/admin')->assertForbidden();
+    }
 
-        $this->actingAs($user)->get('/admin')->assertForbidden();
-
-        config(['app.env' => 'local']); // perilaku default Filament (izinkan semua di local) tidak berlaku lagi
-        $this->actingAs($user)->get('/admin')->assertForbidden();
+    public function test_env_local_tidak_membuka_panel_untuk_pengguna_tanpa_role(): void
+    {
+        config(['app.env' => 'local']); // perilaku default Filament (izinkan semua di local) tidak berlaku
+        $this->actingAs(User::factory()->create())->get('/admin')->assertForbidden();
     }
 
     public function test_admin_create_membuat_akun_terverifikasi(): void
@@ -53,6 +57,7 @@ class AdminAccessTest extends TestCase
             ->assertSuccessful();
 
         $user = User::query()->where('email', self::ADMIN)->sole();
+        $this->assertTrue($user->isSuperAdmin(), 'admin:create = jalur SSH untuk Super Admin');
         $this->assertNotNull($user->email_verified_at);
         $this->assertTrue(Hash::check(self::PASSWORD, $user->password));
         $this->assertTrue($user->canAccessPanel(Filament::getPanel('admin')));

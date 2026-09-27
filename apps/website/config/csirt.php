@@ -7,9 +7,9 @@ return [
     | Admin panel Filament (/admin)
     |--------------------------------------------------------------------------
     |
-    | Email yang boleh masuk panel admin, dipisah koma, dari ADMIN_EMAILS di .env.
-    | Sengaja di .env, bukan di repo — daftar email pribadi tidak masuk git.
-    | Akun admin dibuat dengan `php artisan admin:create <email>`. Lihat User::canAccessPanel().
+    | Email yang boleh dijadikan Super Admin lewat `php artisan admin:create <email>` (jalur SSH),
+    | dipisah koma, dari ADMIN_EMAILS di .env. Sengaja di .env, bukan di repo: daftar email pribadi
+    | tidak masuk git. Akses panel sendiri ditentukan role (RBAC), lihat User::canAccessPanel().
     |
     */
 

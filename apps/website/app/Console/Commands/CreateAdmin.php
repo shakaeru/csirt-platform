@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
@@ -19,7 +20,7 @@ use Illuminate\Validation\Rules\Password;
 #[Signature('admin:create
     {email : Email admin, harus tercantum di ADMIN_EMAILS}
     {--name= : Nama tampilan (ditanyakan bila kosong)}')]
-#[Description('Buat akun admin panel Filament, atau reset password akun yang sudah ada')]
+#[Description('Buat akun Super Admin panel Filament, atau reset password akun yang sudah ada')]
 class CreateAdmin extends Command
 {
     public const PASSWORD_QUESTION = 'Password (min. 12 karakter, huruf dan angka)';
@@ -71,6 +72,7 @@ class CreateAdmin extends Command
             'password' => $password, // di-hash oleh cast `hashed`
             'email_verified_at' => now(), // dibuat operator di server — tidak lewat verifikasi email
             'remember_token' => Str::random(60), // cookie "ingat saya" lama tidak berlaku lagi
+            'role_id' => Role::super()->getKey(), // jalur SSH untuk Super Admin; role lain diatur di panel
         ])->save();
 
         // Akun yang sudah ada (mis. dibuat orang lain memakai email admin — /register sudah ditutup,
@@ -80,7 +82,7 @@ class CreateAdmin extends Command
             ? DB::table(config('session.table', 'sessions'))->where('user_id', $user->getKey())->delete()
             : 0;
 
-        $this->info("Akun admin {$email} siap".($sessions > 0 ? " ({$sessions} sesi lama diputus)" : '').'. Login di /admin/login.');
+        $this->info("Akun Super Admin {$email} siap".($sessions > 0 ? " ({$sessions} sesi lama diputus)" : '').'. Login di /admin/login.');
 
         return self::SUCCESS;
     }
