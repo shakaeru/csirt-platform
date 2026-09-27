@@ -43,6 +43,9 @@
     <title>{{ $seoTitle }}</title>
     <meta name="description" content="{{ $seoDescription }}">
     <link rel="canonical" href="{{ $canonicalUrl }}">
+    @if (filled(config('seo.google_site_verification')))
+        <meta name="google-site-verification" content="{{ config('seo.google_site_verification') }}">
+    @endif
     @if ($noindex ?? false)
         <meta name="robots" content="noindex, follow">
     @endif
