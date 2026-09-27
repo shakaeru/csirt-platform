@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\Permission;
 use App\Models\Setting;
 use App\Support\Contact\ContactPerson;
 use App\Support\Contact\RegistrationStatus;
@@ -41,6 +42,12 @@ class ManageContact extends Page
 
     /** @var array<string, mixed>|null */
     public ?array $data = [];
+
+    /** Dicek Filament saat halaman dibuka dan pada setiap request Livewire (termasuk save()). */
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->hasPermission(Permission::Contact);
+    }
 
     public function mount(): void
     {

@@ -59,14 +59,14 @@ Tanpa `npm run dev`, halaman memakai hasil `npm run build` terakhir.
 
 ## Akun admin
 
-Panel admin hanya untuk email di `ADMIN_EMAILS` yang sudah terverifikasi. Pendaftaran akun publik (`/register`) ditutup.
+Panel admin memakai role dan hak akses. Super Admin pertama dibuat lewat terminal; akun lain dibuat Super Admin dari panel (menu **Akses → Pengguna**), lengkap dengan role dan hak akses tambahan. Pendaftaran akun publik (`/register`) ditutup.
 
-1. Tambahkan ke `.env`: `ADMIN_EMAILS=email-anda@contoh.id` (beberapa email dipisah koma).
-2. Buat akunnya (password ditanyakan lewat prompt tersembunyi):
+1. Tambahkan ke `.env`: `ADMIN_EMAILS=email-anda@contoh.id` (beberapa email dipisah koma). Daftar ini hanya dipakai `admin:create`.
+2. Buat akun Super Admin (password ditanyakan lewat prompt tersembunyi):
    ```bash
    php artisan admin:create email-anda@contoh.id
    ```
-3. Login di http://localhost:8000/admin/login.
+3. Login di http://localhost:8000/admin/login. Role bawaan (Super Admin, Admin, Editor) dan isi hak aksesnya bisa diubah di menu **Akses → Role**.
 
 ## Data contoh
 
@@ -152,7 +152,7 @@ composer install && npm install && php artisan migrate && npm run build
 | Gejala | Penyebab / solusi |
 |---|---|
 | `could not find driver` | Ekstensi `pdo_sqlite` belum ada — pasang `php8.5-sqlite3` |
-| `/admin` → 403 | Email belum ada di `ADMIN_EMAILS`, atau akun belum dibuat lewat `admin:create`. Setelah mengubah `.env`: `php artisan config:clear` |
+| `/admin` → 403 | Akun belum punya role (atur di Akses → Pengguna), belum terverifikasi, atau belum dibuat. Super Admin pertama: `admin:create` (email harus di `ADMIN_EMAILS`; setelah mengubah `.env`: `php artisan config:clear`) |
 | Gambar/foto tidak tampil | Belum `php artisan storage:link`, atau port server beda dengan `APP_URL` |
 | Perubahan tampilan tidak terlihat | Jalankan `npm run dev`, atau `npm run build` ulang |
 
@@ -176,7 +176,7 @@ docker compose up -d                       # live — "Segera Hadir" hilang
 docker compose ps                          # tunggu status (healthy)
 ```
 
-Lalu buat akun admin, satu per email di `ADMIN_EMAILS` (password lewat prompt, jadi perlu terminal interaktif — dari WSL: `ssh -t csirt-vps '…'`):
+Lalu buat akun Super Admin, satu per email di `ADMIN_EMAILS` (password lewat prompt, jadi perlu terminal interaktif; dari WSL: `ssh -t csirt-vps '…'`). Akun lain dibuat dari panel:
 
 ```bash
 docker compose exec website php artisan admin:create <email>
