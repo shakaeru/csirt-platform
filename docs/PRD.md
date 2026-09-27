@@ -52,7 +52,7 @@ Efisiensi Sumber Daya: Mengoptimalkan satu VPS (Virtual Private Server) untuk me
   - [x] Halaman utama / profil UKM (PR #21)
   - [x] Struktur organisasi (PR #13, #14)
   - [x] Berita/kegiatan (bisa jadi mini-CMS: kategori, tag, pencarian) (PR #15)
-  - [ ] Kontak/formulir pendaftaran anggota (dengan validasi Laravel Form Request + notifikasi email ke pengurus)
+  - [x] Kontak + status pendaftaran anggota (PR #23). **Formulir pendaftaran memakai Google Form** (jawaban otomatis ke Google Spreadsheet), bukan formulir sendiri dengan Form Request + notifikasi email seperti rencana awal — keputusan 27 September 2026. Alasan: pendaftaran hanya dibuka setahun sekali; tanpa kode formulir, anti-spam, dan ekspor yang harus dirawat; pertanyaan bisa diubah pengurus tanpa deploy; data pribadi pendaftar tidak disimpan di VPS. Website hanya menampilkan status (belum dibuka/dibuka/ditutup) dan tautan formulir, diatur di panel admin.
   - [x] Galeri dokumentasi kegiatan (PR #17)
   - [x] Halaman prestasi/achievement (khususnya untuk menunjukkan hasil CTF — menghubungkan sub-proyek 4.1 dan 4.3) (PR #18)
 - **Fitur lanjutan (nice-to-have):**

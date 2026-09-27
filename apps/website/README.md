@@ -53,6 +53,7 @@ Tanpa `npm run dev`, halaman memakai hasil `npm run build` terakhir.
 | Berita & Kegiatan | http://localhost:8000/berita |
 | Galeri | http://localhost:8000/galeri |
 | Prestasi | http://localhost:8000/prestasi |
+| Kontak | http://localhost:8000/kontak |
 | Panel admin | http://localhost:8000/admin |
 
 ## Akun admin
@@ -110,6 +111,18 @@ php artisan tinker --execute="App\Models\Achievement::where('competition', 'like
 php artisan struktur:import /path/ke/daftar.txt --photos=/path/ke/folder-foto --dry-run   # cek dulu
 php artisan struktur:import /path/ke/daftar.txt --photos=/path/ke/folder-foto --activate
 ```
+
+## Kontak & pendaftaran anggota
+
+Contact person dan status pendaftaran di halaman Kontak diatur di panel admin → **Kontak & Pendaftaran** (langsung berlaku, tanpa deploy). Email dan media sosial ada di `config/kontak.php`. Nama dan nomor contact person hanya diisi lewat panel — jangan ditulis ke repo (repo publik).
+
+Formulir pendaftaran memakai **Google Form**, bukan formulir di website (alasan: `docs/PRD.md` § 4.1). Saat pendaftaran dibuka:
+
+1. Buat Google Form dengan akun Google milik UKM, bukan akun pribadi pengurus (supaya tidak hilang saat pengurusnya lulus); tambahkan pengurus terkait sebagai editor. Di tab **Respons**, tautkan ke Google Spreadsheet.
+2. Panel admin → Kontak & Pendaftaran: nyalakan **Pendaftaran dibuka**, isi tautan formulir (`https://forms.gle/…`), dan bila perlu hari terakhir pendaftaran.
+3. Setelah pendaftaran selesai: matikan "Menerima respons" di Google Form **dan** matikan saklar di panel admin. Hari terakhir yang diisi membuat halaman Kontak otomatis menampilkan "Sudah ditutup", tetapi Google Form-nya tidak ikut tertutup.
+
+Spreadsheet respons berisi data pribadi pendaftar: bagikan hanya ke pengurus yang memprosesnya, dan tetapkan kapan dihapus (mis. setelah seleksi selesai). Butuh `.xlsx`: di Spreadsheet, File → Download → Microsoft Excel.
 
 ## Tes
 
