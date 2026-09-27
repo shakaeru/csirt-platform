@@ -40,11 +40,11 @@
             <h2 id="visi-misi-judul" class="text-2xl font-bold text-csirt-navy">Visi &amp; Misi</h2>
             <div class="mt-6 grid gap-6 lg:grid-cols-2">
                 <div class="rounded-base bg-csirt-navy p-6 text-csirt-white lg:p-8">
-                    <h3 class="text-sm font-semibold uppercase tracking-wider text-csirt-accent-lime">Visi</h3>
+                    <h3 class="text-sm font-semibold text-csirt-accent-lime">Visi</h3>
                     <p class="mt-3 text-lg leading-relaxed">{{ $profil['visi'] }}</p>
                 </div>
                 <div class="rounded-base border border-csirt-neutral-100 bg-csirt-white p-6 lg:p-8">
-                    <h3 class="text-sm font-semibold uppercase tracking-wider text-csirt-primary">Misi</h3>
+                    <h3 class="text-sm font-semibold text-csirt-primary">Misi</h3>
                     <ol class="mt-3 space-y-3">
                         @foreach ($profil['misi'] as $misi)
                             <li class="flex gap-3">

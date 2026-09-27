@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\BoardSection;
+use App\Models\Concerns\HasResponsiveImage;
 use Database\Factories\BoardMemberFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -16,7 +17,7 @@ use Illuminate\Support\Str;
 class BoardMember extends Model
 {
     /** @use HasFactory<BoardMemberFactory> */
-    use HasFactory;
+    use HasFactory, HasResponsiveImage;
 
     /** Disk tempat foto anggota disimpan (lihat FileUpload di BoardMemberResource). */
     public const PHOTO_DISK = 'public';
@@ -29,21 +30,16 @@ class BoardMember extends Model
                 $member->division_id = null;
             }
         });
+    }
 
-        // Foto yang diganti/anggota yang dihapus: hapus file-nya juga, supaya foto orang yang
-        // sudah tidak menjabat tidak tetap bisa diakses publik lewat URL lama.
-        static::updated(function (BoardMember $member): void {
-            $old = $member->getOriginal('photo_path');
-            if ($member->wasChanged('photo_path') && $old) {
-                Storage::disk(self::PHOTO_DISK)->delete($old);
-            }
-        });
-
-        static::deleted(function (BoardMember $member): void {
-            if ($member->photo_path) {
-                Storage::disk(self::PHOTO_DISK)->delete($member->photo_path);
-            }
-        });
+    /**
+     * Foto 600×600 + varian WebP 128/256/384 px (tampil 96–128 px di layar 1×–3×). Foto yang diganti
+     * atau anggota yang dihapus: file dan variannya ikut dihapus HasResponsiveImage, supaya foto orang
+     * yang sudah tidak menjabat tidak tetap bisa diakses publik lewat URL lama.
+     */
+    protected function responsiveImage(): array
+    {
+        return ['path' => 'photo_path', 'widths' => 'photo_widths', 'disk' => self::PHOTO_DISK, 'targets' => [128, 256, 384]];
     }
 
     /**
@@ -80,6 +76,16 @@ class BoardMember extends Model
         return Attribute::get(fn (): ?string => $this->photo_path
             ? Storage::disk(self::PHOTO_DISK)->url($this->photo_path)
             : null);
+    }
+
+    /**
+     * Nilai srcset varian WebP foto, atau null bila belum ada varian.
+     *
+     * @return Attribute<string|null, never>
+     */
+    protected function photoSrcset(): Attribute
+    {
+        return Attribute::get(fn (): ?string => $this->imageSrcset());
     }
 
     /**

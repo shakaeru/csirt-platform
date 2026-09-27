@@ -128,7 +128,7 @@
                     </address>
                 </div>
                 <nav aria-label="Tautan halaman">
-                    <p class="text-sm font-semibold uppercase tracking-wider text-csirt-navy">Halaman</p>
+                    <p class="text-sm font-semibold text-csirt-navy">Halaman</p>
                     <ul class="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                         @foreach ($navItems as $item)
                             <li><a href="{{ $item['href'] }}" class="text-csirt-neutral-600 hover:text-csirt-primary hover:underline">{{ $item['label'] }}</a></li>
@@ -136,7 +136,7 @@
                     </ul>
                 </nav>
                 <div>
-                    <p class="text-sm font-semibold uppercase tracking-wider text-csirt-navy">Hubungi kami</p>
+                    <p class="text-sm font-semibold text-csirt-navy">Hubungi kami</p>
                     <ul class="mt-3 space-y-2 text-sm">
                         <li><a href="mailto:{{ $kontak['email'] }}" class="text-csirt-neutral-600 hover:text-csirt-primary hover:underline">{{ $kontak['email'] }}</a></li>
                         <li><a href="{{ $kontak['instagram']['url'] }}" target="_blank" rel="noopener noreferrer" class="text-csirt-neutral-600 hover:text-csirt-primary hover:underline">Instagram {{ $kontak['instagram']['akun'] }}<span class="sr-only"> (membuka situs lain)</span></a></li>

@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use Filament\FontProviders\LocalFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -32,6 +33,9 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->favicon(asset('favicon-32x32.png').'?v='.config('seo.icon_version'))
+            // Font sistem, bukan Inter Variable bawaan Filament: tanpa file font, CSS Filament
+            // melanjutkan ke ui-sans-serif/system-ui di perangkat yang tidak punya Segoe UI.
+            ->font('Segoe UI', provider: LocalFontProvider::class)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([

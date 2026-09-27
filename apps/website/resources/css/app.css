@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 @import 'flowbite/src/themes/default';
+/* Font tampilan H1: IBM Plex Sans Condensed Bold (IBM Corp., desain Mike Abbink bersama Bold Monday;
+   SIL OFL 1.1), di-host sendiri lewat @fontsource. Hanya subset latin 700 yang dimuat. */
+@import '@fontsource/ibm-plex-sans-condensed/latin-700.css';
 
 @plugin 'flowbite/plugin';
 
@@ -22,6 +25,14 @@
   --color-csirt-neutral-600: #6b7280;
   --color-csirt-neutral-900: #36343a;
   --color-csirt-white: #ffffff;
+
+  /* Tema Flowbite menaruh 'Inter' di depan --font-sans/--font-body. Situs ini memakai font sistem
+     perangkat untuk teks (tanpa unduhan font) dan IBM Plex Sans Condensed hanya untuk H1.
+     Inter, Geist, dan Space Grotesk jangan dipakai (font bawaan template AI). */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-body: var(--font-sans);
+  --font-display: 'IBM Plex Sans Condensed', 'Arial Narrow', var(--font-sans);
 }
 
 /*
@@ -39,6 +50,10 @@
   ::backdrop,
   ::file-selector-button {
     border-color: var(--color-gray-200, currentcolor);
+  }
+
+  h1 {
+    font-family: var(--font-display);
   }
 }
 

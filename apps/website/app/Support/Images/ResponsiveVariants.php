@@ -18,12 +18,14 @@ final class ResponsiveVariants
     private const QUALITY = 80;
 
     /**
+     * @param  list<int>|null  $targets  lebar varian; null = WIDTHS
      * @return list<int> lebar yang berhasil dibuat, urut naik
      *
      * @throws InvalidArgumentException bila file bukan gambar yang bisa diproses
      */
-    public function generate(string $disk, string $path): array
+    public function generate(string $disk, string $path, ?array $targets = null): array
     {
+        $targets ??= self::WIDTHS;
         $storage = Storage::disk($disk);
         if (! $storage->exists($path)) {
             throw new InvalidArgumentException("{$path}: file tidak ditemukan.");
@@ -35,8 +37,8 @@ final class ResponsiveVariants
 
         // Gambar lebih sempit dari varian terbesar: lebar aslinya ikut jadi varian terbesar.
         $widths = array_values(array_unique([
-            ...array_filter(self::WIDTHS, fn (int $width): bool => $width <= $sourceWidth),
-            min($sourceWidth, max(self::WIDTHS)),
+            ...array_filter($targets, fn (int $width): bool => $width <= $sourceWidth),
+            min($sourceWidth, max($targets)),
         ]));
         sort($widths);
 
