@@ -5,7 +5,6 @@
     Warna hanya dari design tokens (kelas csirt-*), bukan warna default Tailwind.
 --}}
 @php
-    // Item dengan href '#' = halamannya menyusul.
     $navItems = [
         ['label' => 'Beranda', 'href' => route('home'), 'active' => request()->routeIs('home')],
         ['label' => 'Tentang', 'href' => route('tentang'), 'active' => request()->routeIs('tentang')],
@@ -13,7 +12,7 @@
         ['label' => 'Berita & Kegiatan', 'href' => route('berita.index'), 'active' => request()->routeIs('berita.*')],
         ['label' => 'Galeri', 'href' => route('galeri.index'), 'active' => request()->routeIs('galeri.*')],
         ['label' => 'Prestasi', 'href' => route('prestasi'), 'active' => request()->routeIs('prestasi')],
-        ['label' => 'Kontak', 'href' => '#'],
+        ['label' => 'Kontak', 'href' => route('kontak'), 'active' => request()->routeIs('kontak')],
     ];
 @endphp
 <!DOCTYPE html>
