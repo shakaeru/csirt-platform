@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AchievementController;
 use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\OrganizationStructureController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,8 @@ Route::get('galeri', [AlbumController::class, 'index'])->name('galeri.index');
 Route::get('galeri/{album}', [AlbumController::class, 'show'])->name('galeri.show');
 
 Route::get('prestasi', AchievementController::class)->name('prestasi');
+
+Route::get('kontak', ContactController::class)->name('kontak');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
