@@ -35,6 +35,11 @@ return [
     // setahun (immutable), jadi URL-nya harus berubah.
     'icon_version' => '2',
 
+    // Kode verifikasi Google Search Console, metode "Tag HTML" untuk properti awalan URL
+    // https://csirt.pcr.ac.id/ (isi atribut content saja). Bukan rahasia: tampil di HTML setiap
+    // halaman. Jangan dihapus selama properti masih dipakai, karena Google memeriksanya ulang.
+    'google_site_verification' => 'nlaaB8O7hbl8NIrLkNvRahuZfo704fA8pzOCkzoc6q4',
+
     'parent_organization' => [
         'name' => 'Politeknik Caltex Riau',
         'url' => 'https://pcr.ac.id',

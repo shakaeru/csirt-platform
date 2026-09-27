@@ -190,6 +190,15 @@ class SeoTest extends TestCase
         }
     }
 
+    public function test_tag_verifikasi_google_search_console(): void
+    {
+        config(['seo.google_site_verification' => '']);
+        $this->assertSame(0, $this->page('/')->query('//meta[@name="google-site-verification"]')->length);
+
+        config(['seo.google_site_verification' => 'kodeContoh_123-abc']);
+        $this->assertSame('kodeContoh_123-abc', $this->meta($this->page('/'), 'name', 'google-site-verification'));
+    }
+
     private function page(string $url): DOMXPath
     {
         $html = $this->get($url)->assertOk()->getContent();
