@@ -28,10 +28,13 @@ class Photo extends Model
         });
     }
 
-    /** Varian WebP 400/800/1200 dibuat dari foto penuh (maks. 2000 px) saat foto ditambahkan. */
+    /**
+     * Varian WebP 400/800/1200 dibuat dari foto penuh (maks. 2000 px) setelah respons unggah terkirim
+     * (defer): sampai selesai, halaman memakai thumbnail/foto JPEG.
+     */
     protected function responsiveImage(): array
     {
-        return ['path' => 'path', 'widths' => 'variant_widths', 'disk' => Album::DISK];
+        return ['path' => 'path', 'widths' => 'variant_widths', 'disk' => Album::DISK, 'defer' => true];
     }
 
     /**
