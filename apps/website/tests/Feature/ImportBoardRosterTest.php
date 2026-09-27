@@ -6,6 +6,7 @@ use App\Enums\BoardSection;
 use App\Models\BoardMember;
 use App\Models\BoardPeriod;
 use App\Models\Division;
+use App\Support\Images\ResponsiveVariants;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -84,7 +85,7 @@ class ImportBoardRosterTest extends TestCase
     {
         $this->artisan('struktur:import', ['file' => $this->roster()])->assertSuccessful();
 
-        $edited = str_replace(["Budi Ketua — Ketua", "Eko Humas — Anggota\n"], ["Budi Ketua — Ketua Umum", ''], self::ROSTER);
+        $edited = str_replace(['Budi Ketua — Ketua', "Eko Humas — Anggota\n"], ['Budi Ketua — Ketua Umum', ''], self::ROSTER);
         $this->artisan('struktur:import', ['file' => $this->roster($edited)])
             ->expectsOutputToContain('akan dihapus (tidak ada di file): Eko Humas')
             ->assertSuccessful();
@@ -130,6 +131,31 @@ class ImportBoardRosterTest extends TestCase
         $this->assertNotSame($first, $second);
         Storage::disk(BoardMember::PHOTO_DISK)->assertMissing($first);
         Storage::disk(BoardMember::PHOTO_DISK)->assertExists($second);
+        // Varian WebP foto lama ikut terhapus; foto baru punya variannya sendiri.
+        Storage::disk(BoardMember::PHOTO_DISK)->assertMissing(ResponsiveVariants::path($first, 128));
+        Storage::disk(BoardMember::PHOTO_DISK)->assertExists(ResponsiveVariants::path($second, 384));
+    }
+
+    /** Foto 600×600 tampil 96–128 px: varian 128/256/384 untuk layar 1×–3×, dipakai lewat srcset. */
+    public function test_foto_dibuatkan_varian_webp_dan_srcset_di_struktur_organisasi(): void
+    {
+        file_put_contents($this->dir.'/foto/budi-ketua.jpg', $this->jpegWithOrientation(800, 800, 1));
+        $this->artisan('struktur:import', ['file' => $this->roster(), '--photos' => $this->dir.'/foto', '--activate' => true])->assertSuccessful();
+
+        $member = BoardMember::query()->where('name', 'Budi Ketua')->sole();
+        $disk = Storage::disk(BoardMember::PHOTO_DISK);
+        $this->assertSame([128, 256, 384], $member->photo_widths);
+        foreach ([128, 256, 384] as $width) {
+            $this->assertSame([$width, $width, IMAGETYPE_WEBP], array_slice(getimagesize($disk->path(ResponsiveVariants::path($member->photo_path, $width))), 0, 3));
+        }
+
+        // Budi di Pengurus Inti (kartu besar: 128 px mulai 640 px); anggota divisi tanpa foto tetap avatar inisial.
+        $this->get('/struktur-organisasi')
+            ->assertSee('srcset="'.$member->photo_srcset.'" sizes="(min-width: 640px) 128px, 96px"', false)
+            ->assertSee('src="'.$member->photo_url.'"', false);
+
+        $member->delete();
+        $this->assertSame([], $disk->allFiles('pengurus'));
     }
 
     public function test_file_foto_tidak_cocok_dan_format_tidak_didukung_dilaporkan(): void

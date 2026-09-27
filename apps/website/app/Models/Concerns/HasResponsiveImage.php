@@ -27,9 +27,10 @@ use function Illuminate\Support\defer;
 trait HasResponsiveImage
 {
     /**
-     * Nama kolom path, kolom lebar (JSON), disk, dan (opsional) apakah varian dibuat setelah respons.
+     * Nama kolom path, kolom lebar (JSON), disk, dan opsional: lebar varian (default
+     * ResponsiveVariants::WIDTHS) serta apakah varian dibuat setelah respons.
      *
-     * @return array{path: string, widths: string, disk: string, defer?: bool}
+     * @return array{path: string, widths: string, disk: string, targets?: list<int>, defer?: bool}
      */
     abstract protected function responsiveImage(): array;
 
@@ -91,7 +92,7 @@ trait HasResponsiveImage
     /** Buat ulang varian WebP dan simpan lebarnya (tanpa memicu event model). */
     public function refreshImageVariants(): void
     {
-        ['path' => $pathColumn, 'widths' => $widthsColumn, 'disk' => $disk] = $this->responsiveImage();
+        ['path' => $pathColumn, 'widths' => $widthsColumn, 'disk' => $disk] = $config = $this->responsiveImage();
         $path = $this->getAttribute($pathColumn);
         $variants = app(ResponsiveVariants::class);
 
@@ -99,7 +100,7 @@ trait HasResponsiveImage
         if ($path) {
             $variants->delete($disk, $path);
             try {
-                $widths = $variants->generate($disk, $path);
+                $widths = $variants->generate($disk, $path, $config['targets'] ?? null);
             } catch (InvalidArgumentException $e) {
                 Log::warning('Varian gambar gagal dibuat', ['model' => static::class, 'id' => $this->getKey(), 'error' => $e->getMessage()]);
             }
