@@ -54,6 +54,7 @@ Tanpa `npm run dev`, halaman memakai hasil `npm run build` terakhir.
 | Galeri | http://localhost:8000/galeri |
 | Prestasi | http://localhost:8000/prestasi |
 | Kontak | http://localhost:8000/kontak |
+| Sitemap (untuk mesin pencari) | http://localhost:8000/sitemap.xml |
 | Panel admin | http://localhost:8000/admin |
 
 ## Akun admin
@@ -123,6 +124,15 @@ Formulir pendaftaran memakai **Google Form**, bukan formulir di website (alasan:
 3. Setelah pendaftaran selesai: matikan "Menerima respons" di Google Form **dan** matikan saklar di panel admin. Hari terakhir yang diisi membuat halaman Kontak otomatis menampilkan "Sudah ditutup", tetapi Google Form-nya tidak ikut tertutup.
 
 Spreadsheet respons berisi data pribadi pendaftar: bagikan hanya ke pengurus yang memprosesnya, dan tetapkan kapan dihapus (mis. setelah seleksi selesai). Butuh `.xlsx`: di Spreadsheet, File → Download → Microsoft Excel.
+
+## SEO & Google Search Console
+
+Meta tag, canonical, Open Graph, JSON-LD, `sitemap.xml`, dan `robots.txt` sudah dibuat otomatis oleh aplikasi (lihat `apps/website/CLAUDE.md` § SEO). Yang harus dilakukan manual oleh pengurus:
+
+1. Daftarkan `csirt.pcr.ac.id` di [Google Search Console](https://search.google.com/search-console). Verifikasi lewat **awalan URL** dengan tag HTML atau file HTML (verifikasi **domain** butuh record DNS di `pcr.ac.id`, yang dikelola pihak kampus).
+2. Kirim sitemap `https://csirt.pcr.ac.id/sitemap.xml` di menu Sitemaps, lalu minta pengindeksan untuk Beranda lewat Inspeksi URL.
+3. Minta tautan dari situs resmi `pcr.ac.id` (halaman UKM/kemahasiswaan), bio Instagram @csirt_pcr, dan halaman LinkedIn ke `https://csirt.pcr.ac.id`. Tautan dari domain kampus paling berpengaruh untuk pencarian "csirt pcr".
+4. Cek tampilan share dengan [Rich Results Test](https://search.google.com/test/rich-results) (JSON-LD) dan debugger share Facebook/LinkedIn (Open Graph) setelah deploy.
 
 ## Tes
 
