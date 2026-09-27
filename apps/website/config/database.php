@@ -43,6 +43,12 @@ return [
             'journal_mode' => env('DB_JOURNAL_MODE'),
             'synchronous' => env('DB_SYNCHRONOUS'),
             'transaction_mode' => 'DEFERRED',
+            // Production (docker-compose.yml): koneksi dibiarkan terbuka di setiap proses PHP-FPM.
+            // Menutup koneksi setelah menulis memicu checkpoint WAL + fsync — di disk VPS yang lambat
+            // ±0,3–0,9 detik per request. Lokal/tes: mati (tes memakai :memory:).
+            'options' => [
+                PDO::ATTR_PERSISTENT => (bool) env('DB_PERSISTENT', false),
+            ],
         ],
 
         'mysql' => [
