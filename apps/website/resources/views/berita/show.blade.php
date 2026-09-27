@@ -33,9 +33,10 @@
 
         @if ($post->cover_url)
             {{-- Gambar terbesar di atas lipatan: dimuat lebih dulu (tanpa lazy). Lebar konten maks. 736 px (max-w-3xl). --}}
-            <x-post-cover :post="$post" :alt="'Sampul tulisan: '.$post->title" fetchpriority="high"
-                          class="mt-8 aspect-video w-full rounded-base object-cover"
-                          sizes="(min-width: 768px) 736px, calc(100vw - 32px)" />
+            <x-responsive-image :src="$post->cover_url" :srcset="$post->cover_srcset" :alt="'Sampul tulisan: '.$post->title"
+                                width="1200" height="675" fetchpriority="high"
+                                class="mt-8 aspect-video w-full rounded-base object-cover"
+                                sizes="(min-width: 768px) 736px, calc(100vw - 32px)" />
         @endif
 
         {{-- renderRichContent() = toHtml() Filament: HTML disanitasi (Symfony HtmlSanitizer).

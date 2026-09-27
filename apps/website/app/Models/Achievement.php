@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\AchievementCategory;
 use App\Enums\AchievementLevel;
 use App\Models\Concerns\HasPublication;
+use App\Models\Concerns\HasResponsiveImage;
 use Database\Factories\AchievementFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -21,26 +22,15 @@ use Illuminate\Support\Facades\Storage;
 class Achievement extends Model
 {
     /** @use HasFactory<AchievementFactory> */
-    use HasFactory, HasPublication;
+    use HasFactory, HasPublication, HasResponsiveImage;
 
     /** Disk foto prestasi (lihat FileUpload di AchievementForm). */
     public const PHOTO_DISK = 'public';
 
-    protected static function booted(): void
+    /** Foto + varian WebP-nya (srcset). Hapus/ganti file ditangani HasResponsiveImage. */
+    protected function responsiveImage(): array
     {
-        // Foto yang diganti/prestasi yang dihapus: hapus file-nya juga (sama seperti sampul tulisan).
-        static::updated(function (Achievement $achievement): void {
-            $old = $achievement->getOriginal('photo_path');
-            if ($achievement->wasChanged('photo_path') && $old) {
-                Storage::disk(self::PHOTO_DISK)->delete($old);
-            }
-        });
-
-        static::deleted(function (Achievement $achievement): void {
-            if ($achievement->photo_path) {
-                Storage::disk(self::PHOTO_DISK)->delete($achievement->photo_path);
-            }
-        });
+        return ['path' => 'photo_path', 'widths' => 'photo_widths', 'disk' => self::PHOTO_DISK];
     }
 
     /**
@@ -84,6 +74,16 @@ class Achievement extends Model
         return Attribute::get(fn (): ?string => $this->photo_path
             ? Storage::disk(self::PHOTO_DISK)->url($this->photo_path)
             : null);
+    }
+
+    /**
+     * Nilai srcset varian WebP foto, atau null bila belum ada varian.
+     *
+     * @return Attribute<string|null, never>
+     */
+    protected function photoSrcset(): Attribute
+    {
+        return Attribute::get(fn (): ?string => $this->imageSrcset());
     }
 
     /**

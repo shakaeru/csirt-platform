@@ -24,6 +24,17 @@ trait CreatesTestImages
         return substr($jpeg, 0, 2).$app1.substr($jpeg, 2);
     }
 
+    /** JPEG polos berukuran tertentu (isi gambar tidak penting, hanya dimensinya). */
+    protected function plainJpeg(int $width, int $height): string
+    {
+        $image = imagecreatetruecolor($width, $height);
+        imagefill($image, 0, 0, imagecolorallocate($image, 18, 96, 165));
+        ob_start();
+        imagejpeg($image, null, 85);
+
+        return (string) ob_get_clean();
+    }
+
     protected function dominant(GdImage $image, int $x, int $y): string
     {
         $rgb = imagecolorat($image, $x, $y);

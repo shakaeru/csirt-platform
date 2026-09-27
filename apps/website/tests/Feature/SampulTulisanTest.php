@@ -16,7 +16,7 @@ use Livewire\Livewire;
 use Tests\Concerns\CreatesTestImages;
 use Tests\TestCase;
 
-/** Varian WebP sampul tulisan untuk srcset (ResponsiveVariants + Post::refreshCoverVariants()). */
+/** Varian WebP sampul tulisan untuk srcset (ResponsiveVariants + HasResponsiveImage). */
 class SampulTulisanTest extends TestCase
 {
     use CreatesTestImages, RefreshDatabase;
@@ -152,10 +152,6 @@ class SampulTulisanTest extends TestCase
 
     private function putJpeg(string $path, int $width, int $height): void
     {
-        $image = imagecreatetruecolor($width, $height);
-        imagefill($image, 0, 0, imagecolorallocate($image, 18, 96, 165));
-        ob_start();
-        imagejpeg($image, null, 85);
-        $this->disk->put($path, (string) ob_get_clean());
+        $this->disk->put($path, $this->plainJpeg($width, $height));
     }
 }
