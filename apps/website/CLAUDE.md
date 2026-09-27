@@ -50,7 +50,8 @@ Container `website` (Dockerfile + docker-compose.yml di folder ini), serversideu
 - **Proxy:** `trustProxies()` di `bootstrap/app.php` hanya range network Docker dan hanya header For + Proto. **Jangan** ganti ke `'*'` (di Laravel 13 = percaya semua IP → IP pengunjung bisa dipalsukan lewat X-Forwarded-For) dan jangan tambahkan X-Forwarded-Host/Port (host header injection). Dijaga `TrustedProxyTest`.
 - **HSTS hanya di Nginx edge.** `docker/nginx/security.conf` sengaja menghapus HSTS bawaan image (`includeSubDomains` setahun); `docker/nginx/remoteip.conf` sengaja kosong (real-IP bawaan image bisa dipalsukan).
 - `.env` production dibaca compose (`env_file`) — tanpa interpolasi `${...}`; config di-cache saat start, jadi perubahan `.env` butuh `up -d --force-recreate`. Variabel baru yang wajib di production → tambahkan juga ke `.env.production.example`.
-- Migrasi **tidak** otomatis saat start (`AUTORUN_LARAVEL_MIGRATION=false`) — dijalankan manual setelah backup.
+- Migrasi **tidak** otomatis saat start (`AUTORUN_LARAVEL_MIGRATION=false`) — `scripts/deploy-website.sh` mem-backup database lalu menjalankannya di container sekali-jalan sebelum container diganti. Migrasi harus aman dijalankan saat kode lama masih melayani (tambah tabel/kolom; hapus/ubah kolom butuh rencana terpisah).
+- Backup/pemulihan: `scripts/backup-website.sh` dan `scripts/restore-website.sh` (README § Backup & pemulihan). Data yang disimpan di luar SQLite dan `storage/app/public` **tidak** ikut ter-backup — perbarui skripnya bila menambah lokasi data.
 - Batas upload container (`NGINX_CLIENT_MAX_BODY_SIZE`, `PHP_POST_MAX_SIZE`, `PHP_UPLOAD_MAX_FILE_SIZE`) harus selaras dengan tabel ARCHITECTURE § 4.
 - Ekstensi PHP baru (mis. untuk paket composer) → `install-php-extensions` di Dockerfile, bukan hanya di WSL.
 

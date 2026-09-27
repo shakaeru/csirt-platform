@@ -161,13 +161,38 @@ docker compose exec website php artisan admin:create <email>
 ### Update setelah PR di-merge
 
 ```bash
-git -C /opt/csirt pull --ff-only
-docker compose build
-docker compose run --rm --no-deps website php artisan migrate --force
-docker compose up -d
+/opt/csirt/scripts/deploy-website.sh
 ```
 
-Backup database sebelum migrasi — skrip deploy dan backup menyusul (sampai ada, cek dulu apakah PR menambah migrasi).
+Urutannya: `git pull` → backup database → build image → migrasi (container sekali-jalan) → container baru → cek `https://csirt.pcr.ac.id` lewat Nginx edge. Hanya jalan bila ada commit baru yang menyentuh `apps/website` (`--force` untuk memaksa). Build di VPS ini lambat (disk lambat untuk fsync) — layer yang tidak berubah diambil dari cache. Di akhir, skrip mencetak perintah rollback.
+
+### Backup & pemulihan
+
+`/opt/csirt/scripts/backup-website.sh` menyimpan ke `~/backups/website/` (user `deploy`, mode 700):
+
+| Isi | File | Retensi |
+|---|---|---|
+| Database — salinan konsisten (`VACUUM INTO`), dicek `integrity_check` | `db/website-<UTC>.sqlite.gz` | 30 hari |
+| Upload (`storage/app/public`) — hanya bila ada perubahan | `storage/website-storage-<UTC>.tar` | 7 salinan terakhir |
+
+Berjalan harian lewat cron `deploy` (02:45 WIB) dan otomatis sebelum setiap deploy (database saja):
+
+```
+45 19 * * * /opt/csirt/scripts/backup-website.sh >> /home/deploy/backup-website.log 2>&1
+```
+
+Backup ini masih di disk VPS yang sama — **salin ke luar VPS** secara berkala (minimal mingguan), dari WSL:
+
+```bash
+rsync -av csirt-vps:backups/website/ ~/csirt-backups/website/
+```
+
+Pemulihan (meminta konfirmasi; database saat ini di-backup dulu, situs mati sebentar):
+
+```bash
+/opt/csirt/scripts/restore-website.sh db ~/backups/website/db/website-<UTC>.sqlite.gz
+/opt/csirt/scripts/restore-website.sh storage ~/backups/website/storage/website-storage-<UTC>.tar
+```
 
 ### Operasional
 
@@ -178,5 +203,6 @@ Backup database sebelum migrasi — skrip deploy dan backup menyusul (sampai ada
 | Setelah mengubah `.env` (config di-cache saat start) | `docker compose up -d --force-recreate` |
 | Perintah artisan | `docker compose exec website php artisan <perintah>` |
 | Rollback kode | `git -C /opt/csirt checkout <commit>` lalu `docker compose up -d --build` (migrasi tidak ikut mundur) |
+| Log backup harian | `tail -n 20 /home/deploy/backup-website.log` |
 
 **Jangan** menjalankan seeder contoh (`Demo*Seeder`) di production, dan jangan `docker compose down -v` — `-v` menghapus volume berisi database dan semua upload.
