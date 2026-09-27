@@ -49,7 +49,7 @@ Efisiensi Sumber Daya: Mengoptimalkan satu VPS (Virtual Private Server) untuk me
 ### 4.1 Website Profil UKM
 - **Target pengguna:** Calon anggota, anggota aktif, alumni, sponsor/mitra, pengurus fakultas/universitas, dan pengunjung umum.
 - **Fitur wajib (MVP):**
-  - [ ] Halaman utama / profil UKM
+  - [x] Halaman utama / profil UKM (PR #21)
   - [x] Struktur organisasi (PR #13, #14)
   - [x] Berita/kegiatan (bisa jadi mini-CMS: kategori, tag, pencarian) (PR #15)
   - [ ] Kontak/formulir pendaftaran anggota (dengan validasi Laravel Form Request + notifikasi email ke pengurus)
