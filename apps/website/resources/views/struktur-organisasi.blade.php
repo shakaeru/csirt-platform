@@ -1,4 +1,7 @@
-@extends('layouts.app', ['title' => 'Struktur Organisasi'])
+@extends('layouts.app', [
+    'title' => 'Struktur Organisasi',
+    'description' => 'Susunan pengurus UKM CSIRT Politeknik Caltex Riau'.($period ? ' periode '.$period->name : '').', dari pembina dan pengurus inti sampai anggota tiap divisi.',
+])
 
 @section('content')
     <section class="bg-csirt-neutral-100">

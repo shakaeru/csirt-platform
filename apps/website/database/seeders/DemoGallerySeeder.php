@@ -24,7 +24,7 @@ class DemoGallerySeeder extends Seeder
     public function run(): void
     {
         if (app()->isProduction()) {
-            $this->command->error('DemoGallerySeeder hanya untuk lokal — dibatalkan di production.');
+            $this->command->error('DemoGallerySeeder hanya untuk lokal, dibatalkan di production.');
 
             return;
         }
@@ -64,7 +64,7 @@ class DemoGallerySeeder extends Seeder
         for ($i = 1; $i <= $count; $i++) {
             $source = tempnam(sys_get_temp_dir(), 'galeri-contoh-');
             file_put_contents($source, $this->image($i, $colorOffset));
-            $album->addPhoto($source, $i === 1 ? 'Contoh keterangan foto — diisi admin di panel.' : null);
+            $album->addPhoto($source, $i === 1 ? 'Contoh keterangan foto, diisi admin di panel.' : null);
             unlink($source);
         }
     }

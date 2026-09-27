@@ -55,7 +55,7 @@ class AchievementForm
                         ]),
                         Textarea::make('members')
                             ->label('Anggota')
-                            ->helperText('Satu nama per baris. Tampil di halaman publik — tulis hanya nama yang bersedia dicantumkan.')
+                            ->helperText('Satu nama per baris. Tampil di halaman publik, jadi tulis hanya nama yang bersedia dicantumkan.')
                             ->rows(4)
                             ->maxLength(1000),
                         Textarea::make('description')
@@ -70,7 +70,7 @@ class AchievementForm
                     Section::make('Publikasi')->schema([
                         DatePicker::make('achieved_on')
                             ->label('Tanggal')
-                            ->helperText('Tanggal pengumuman/pelaksanaan — halaman Prestasi dikelompokkan per tahun.')
+                            ->helperText('Tanggal pengumuman atau pelaksanaan. Halaman Prestasi dikelompokkan per tahun.')
                             ->default(now())
                             ->required(),
                         DateTimePicker::make('published_at')
@@ -95,7 +95,7 @@ class AchievementForm
                     Section::make('Foto')->schema([
                         FileUpload::make('photo_path')
                             ->hiddenLabel()
-                            ->helperText('Opsional: foto tim atau sertifikat. JPG, PNG, atau WebP — otomatis dipotong 16:9 dan diperkecil ke 1200×675 di browser.')
+                            ->helperText('Opsional: foto tim atau sertifikat. JPG, PNG, atau WebP. Otomatis dipotong 16:9 dan diperkecil ke 1200×675 di browser.')
                             ->image()
                             // Tanpa SVG: SVG bisa memuat script dan dilayani dari domain yang sama.
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])

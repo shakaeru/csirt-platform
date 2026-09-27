@@ -67,7 +67,7 @@ final class UprightImage
         }
 
         if (memory_get_usage() + $width * $height * 5 * 2 > $limit) {
-            throw new InvalidArgumentException("{$name}: resolusi terlalu besar ({$width}×{$height}) untuk diproses server — perkecil dulu.");
+            throw new InvalidArgumentException("{$name}: resolusi terlalu besar ({$width}×{$height}) untuk diproses server. Perkecil dulu.");
         }
     }
 

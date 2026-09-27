@@ -2,7 +2,7 @@
 
 /*
 |--------------------------------------------------------------------------
-| Profil UKM CSIRT — halaman Tentang dan Beranda
+| Profil UKM CSIRT: halaman Tentang dan Beranda
 |--------------------------------------------------------------------------
 |
 | Satu sumber teks untuk resources/views/tentang.blade.php dan home.blade.php, supaya visi,
@@ -35,27 +35,27 @@ return [
     'program_kerja' => [
         [
             'nama' => 'Pelatihan Rutin CSIRT',
-            'deskripsi' => 'Sesi belajar berkala untuk anggota, dari materi dasar hingga lanjutan keamanan siber, disertai praktik langsung.',
+            'deskripsi' => 'Sesi belajar berkala untuk anggota, dari materi dasar sampai topik lanjutan keamanan siber. Setiap sesi diisi dengan praktik.',
             'unggulan' => true,
         ],
         [
             'nama' => 'Pertemuan Perdana CSIRT',
-            'deskripsi' => 'Pertemuan pembuka periode kepengurusan untuk menyambut anggota baru, mengenalkan pengurus, dan memaparkan rencana kegiatan.',
+            'deskripsi' => 'Pertemuan pertama di awal periode kepengurusan. Anggota baru berkenalan dengan pengurus dan mendapat gambaran kegiatan selama setahun.',
             'unggulan' => false,
         ],
         [
             'nama' => 'Seminar dan Workshop Kolaborasi',
-            'deskripsi' => 'Kegiatan bersama komunitas dan industri untuk berbagi pengetahuan dan memperluas jejaring anggota.',
+            'deskripsi' => 'Seminar dan workshop yang diadakan bersama komunitas atau perusahaan di bidang keamanan siber, sekaligus kesempatan anggota menambah relasi.',
             'unggulan' => false,
         ],
         [
             'nama' => 'Workshop Cybersecurity',
-            'deskripsi' => 'Pelatihan intensif dengan tema keamanan siber tertentu, dari konsep hingga praktik langsung.',
+            'deskripsi' => 'Pelatihan intensif yang membahas satu topik keamanan siber secara mendalam, dari konsep sampai praktik.',
             'unggulan' => true,
         ],
         [
             'nama' => 'Lomba CTF Jeopardy',
-            'deskripsi' => 'Kompetisi Capture The Flag format Jeopardy: peserta memecahkan tantangan kriptografi, web, forensik, dan kategori lain untuk mengumpulkan poin.',
+            'deskripsi' => 'Kompetisi Capture The Flag format Jeopardy yang diselenggarakan CSIRT. Peserta mengerjakan soal kriptografi, web, forensik, dan kategori lain untuk mengumpulkan poin.',
             'unggulan' => true,
         ],
     ],

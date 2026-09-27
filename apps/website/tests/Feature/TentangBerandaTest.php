@@ -48,7 +48,7 @@ class TentangBerandaTest extends TestCase
 
         $response = $this->get('/')
             ->assertOk()
-            ->assertSee('UKM CSIRT — Politeknik Caltex Riau')
+            ->assertSee('UKM CSIRT Politeknik Caltex Riau</h1>', false)
             ->assertSee($profil['visi'])
             ->assertSee('href="'.route('tentang').'#visi-misi"', false)
             ->assertSee('href="'.route('tentang').'#program-kerja"', false)

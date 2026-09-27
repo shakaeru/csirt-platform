@@ -44,7 +44,7 @@ class PhotosRelationManager extends RelationManager
                     ->imageHeight(64),
                 TextInputColumn::make('caption')
                     ->label('Keterangan')
-                    ->placeholder('Opsional — tampil di bawah foto saat dibuka')
+                    ->placeholder('Opsional, tampil di bawah foto saat dibuka')
                     ->rules(['nullable', 'string', 'max:200']),
                 TextColumn::make('dimensions')
                     ->label('Ukuran')

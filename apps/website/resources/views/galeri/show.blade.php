@@ -2,7 +2,9 @@
     'title' => $album->title,
     'description' => $album->description
         ? Str::limit(Str::squish($album->description), 160)
-        : 'Dokumentasi '.$album->title.' — '.$album->photos->count().' foto.',
+        : $album->photos->count().' foto dokumentasi '.$album->title.', '.$album->event_date_label.'.',
+    'ogImage' => $album->photos->first()?->url,
+    'ogImageAlt' => $album->photos->first()?->caption ?? 'Foto dokumentasi '.$album->title,
 ])
 
 @section('content')
@@ -41,7 +43,7 @@
                        data-pswp-width="{{ $photo->width }}" data-pswp-height="{{ $photo->height }}" data-cropped="true"
                        @if ($photo->caption) data-caption="{{ $photo->caption }}" @endif
                        class="group block aspect-square overflow-hidden rounded-base bg-csirt-neutral-100 focus:outline-hidden focus:ring-4 focus:ring-csirt-primary-light">
-                        <img src="{{ $photo->thumb_url }}" alt="{{ $photo->caption ?? 'Foto '.$loop->iteration.' — '.$album->title }}" loading="lazy"
+                        <img src="{{ $photo->thumb_url }}" alt="{{ $photo->caption ?? 'Foto '.$loop->iteration.' dari album '.$album->title }}" loading="lazy"
                              class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none">
                     </a>
                 @endforeach

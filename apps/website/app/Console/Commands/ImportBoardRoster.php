@@ -69,7 +69,7 @@ class ImportBoardRoster extends Command
         $this->reportPlan($roster->period, $period === null, $incoming, $existing, $toRemove, $photoDir, $photos, $ignoredFiles);
 
         if ($this->option('dry-run')) {
-            $this->warn('Dry run — tidak ada yang disimpan.');
+            $this->warn('Dry run: tidak ada yang disimpan.');
 
             return self::SUCCESS;
         }
@@ -120,7 +120,7 @@ class ImportBoardRoster extends Command
                 $saved[$slug]->update(['photo_path' => $processor->store($path, $slug)]);
                 $processed++;
             } catch (InvalidArgumentException $e) {
-                $this->warn('Foto dilewati — '.$e->getMessage());
+                $this->warn('Foto dilewati: '.$e->getMessage());
             }
         }
 
@@ -129,9 +129,9 @@ class ImportBoardRoster extends Command
         }
 
         $this->info(sprintf(
-            'Selesai: periode %s — %d anggota tersimpan, %d dihapus, %d foto diproses%s.',
+            'Selesai: periode %s, %d anggota tersimpan, %d dihapus, %d foto diproses%s.',
             $period->name, count($saved), $toRemove->count(), $processed,
-            $period->fresh()->is_active ? ', periode AKTIF' : ' (periode belum aktif — jalankan ulang dengan --activate untuk menampilkannya)',
+            $period->fresh()->is_active ? ', periode AKTIF' : ' (periode belum aktif; jalankan ulang dengan --activate untuk menampilkannya)',
         ));
 
         return self::SUCCESS;
@@ -146,7 +146,7 @@ class ImportBoardRoster extends Command
      */
     private function reportPlan(string $period, bool $newPeriod, Collection $incoming, Collection $existing, Collection $toRemove, ?string $photoDir, array $photos, array $ignoredFiles): void
     {
-        $this->line("Periode <info>{$period}</info>".($newPeriod ? ' (baru)' : ' (sudah ada — disinkronkan)'));
+        $this->line("Periode <info>{$period}</info>".($newPeriod ? ' (baru)' : ' (sudah ada, disinkronkan)'));
 
         $this->table(['Bagian', 'Anggota'], collect(BoardSection::cases())
             ->map(fn (BoardSection $section): array => [
@@ -173,7 +173,7 @@ class ImportBoardRoster extends Command
             $this->line("  belum ada foto: {$incoming[$slug]->name} → {$slug}.jpg");
         }
         foreach (array_diff(array_keys($photos), $incoming->keys()->all()) as $slug) {
-            $this->warn("  file foto tidak cocok dengan nama mana pun (salah ketik?): ".basename($photos[$slug]));
+            $this->warn('  file foto tidak cocok dengan nama mana pun (salah ketik?): '.basename($photos[$slug]));
         }
         foreach ($ignoredFiles as $name) {
             $this->warn("  diabaikan, format tidak didukung (pakai JPG/PNG/WebP): {$name}");

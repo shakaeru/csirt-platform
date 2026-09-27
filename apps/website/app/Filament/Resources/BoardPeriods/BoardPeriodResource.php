@@ -51,7 +51,7 @@ class BoardPeriodResource extends Resource
                     ->afterOrEqual('starts_on'),
                 Toggle::make('is_active')
                     ->label('Periode aktif (tampil di website)')
-                    ->helperText('Hanya satu periode yang aktif — mengaktifkan periode ini menonaktifkan periode lain.'),
+                    ->helperText('Hanya satu periode yang aktif. Mengaktifkan periode ini menonaktifkan periode lain.'),
             ]);
     }
 
@@ -67,11 +67,11 @@ class BoardPeriodResource extends Resource
                 TextColumn::make('starts_on')
                     ->label('Mulai')
                     ->date()
-                    ->placeholder('—'),
+                    ->placeholder('-'),
                 TextColumn::make('ends_on')
                     ->label('Selesai')
                     ->date()
-                    ->placeholder('—'),
+                    ->placeholder('-'),
                 IconColumn::make('is_active')
                     ->label('Aktif')
                     ->boolean(),

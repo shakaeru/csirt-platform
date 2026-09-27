@@ -1,4 +1,19 @@
-@extends('layouts.app', ['title' => $post->title, 'description' => $post->summary])
+@extends('layouts.app', [
+    'title' => $post->title,
+    'description' => $post->summary,
+    'ogType' => 'article',
+    'ogImage' => $post->cover_url,
+    'ogImageAlt' => $post->cover_url ? 'Sampul tulisan: '.$post->title : null,
+])
+
+@push('head')
+    <meta property="article:published_time" content="{{ $post->published_at->toIso8601String() }}">
+    <meta property="article:modified_time" content="{{ $post->updated_at->toIso8601String() }}">
+    <meta property="article:section" content="{{ $post->category->name }}">
+    @foreach ($post->tags as $tag)
+        <meta property="article:tag" content="{{ $tag->name }}">
+    @endforeach
+@endpush
 
 @section('content')
     <article class="mx-auto max-w-3xl px-4 py-10 lg:py-14">
@@ -17,7 +32,7 @@
         </header>
 
         @if ($post->cover_url)
-            <img src="{{ $post->cover_url }}" alt="" width="1200" height="675" class="mt-8 aspect-video w-full rounded-base object-cover">
+            <img src="{{ $post->cover_url }}" alt="Sampul tulisan: {{ $post->title }}" width="1200" height="675" class="mt-8 aspect-video w-full rounded-base object-cover">
         @endif
 
         {{-- renderRichContent() = toHtml() Filament: HTML disanitasi (Symfony HtmlSanitizer).
@@ -41,7 +56,7 @@
         @endif
 
         @foreach ($albums as $album)
-            {{-- Album galeri yang ditautkan ke tulisan ini (hanya yang terbit) — cuplikan, lengkapnya di halaman album. --}}
+            {{-- Album galeri yang ditautkan ke tulisan ini (hanya yang terbit). Cuplikan saja, lengkapnya di halaman album. --}}
             <section class="mt-10 border-t border-csirt-neutral-100 pt-6" aria-labelledby="album-{{ $album->id }}">
                 <h2 id="album-{{ $album->id }}" class="text-xl font-bold text-csirt-navy">Dokumentasi: {{ $album->title }}</h2>
                 <div class="mt-4 grid grid-cols-3 gap-2">

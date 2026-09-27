@@ -1,6 +1,9 @@
 @extends('layouts.app', [
-    'title' => 'Prestasi',
-    'description' => 'Prestasi anggota UKM CSIRT Politeknik Caltex Riau di kompetisi CTF dan lomba lainnya.',
+    'title' => 'Prestasi'.($category ? ': '.$category->getLabel() : ''),
+    'description' => $category
+        ? 'Daftar prestasi anggota UKM CSIRT Politeknik Caltex Riau, kategori '.$category->getLabel().'.'
+        : 'Prestasi anggota UKM CSIRT Politeknik Caltex Riau di kompetisi CTF dan lomba lainnya.',
+    'canonicalQuery' => ['jenis' => $category?->value],
 ])
 
 @section('content')

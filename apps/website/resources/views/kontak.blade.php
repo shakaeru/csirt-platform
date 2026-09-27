@@ -2,14 +2,14 @@
      admin "Kontak & Pendaftaran" (nomor HP pengurus sengaja tidak di repo). Ikon: Flowbite Icons (MIT). --}}
 @extends('layouts.app', [
     'title' => 'Kontak',
-    'description' => 'Kontak, media sosial, dan informasi pendaftaran anggota UKM CSIRT Politeknik Caltex Riau.',
+    'description' => 'Cara menghubungi pengurus UKM CSIRT Politeknik Caltex Riau dan status pendaftaran anggota baru.',
 ])
 
 @section('content')
     <section class="bg-csirt-neutral-100">
         <div class="mx-auto max-w-screen-xl px-4 py-12 text-center lg:py-16">
             <h1 class="text-3xl font-extrabold tracking-tight text-csirt-navy md:text-4xl">Kontak</h1>
-            <p class="mx-auto mt-3 max-w-2xl text-lg text-csirt-neutral-600">Punya pertanyaan tentang UKM CSIRT, kegiatan, atau pendaftaran anggota? Hubungi pengurus atau ikuti kabar terbaru kami di media sosial.</p>
+            <p class="mx-auto mt-3 max-w-2xl text-lg text-csirt-neutral-600">Pertanyaan tentang kegiatan atau pendaftaran anggota bisa langsung disampaikan ke pengurus. Pengumuman terbaru dimuat di Instagram {{ $kontak['instagram']['akun'] }}.</p>
         </div>
     </section>
 

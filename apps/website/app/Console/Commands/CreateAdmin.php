@@ -17,7 +17,7 @@ use Illuminate\Validation\Rules\Password;
  * tidak tercatat di riwayat shell.
  */
 #[Signature('admin:create
-    {email : Email admin — harus tercantum di ADMIN_EMAILS}
+    {email : Email admin, harus tercantum di ADMIN_EMAILS}
     {--name= : Nama tampilan (ditanyakan bila kosong)}')]
 #[Description('Buat akun admin panel Filament, atau reset password akun yang sudah ada')]
 class CreateAdmin extends Command
@@ -37,14 +37,14 @@ class CreateAdmin extends Command
         }
 
         if (! in_array($email, config('csirt.admin_emails'), true)) {
-            $this->error("{$email} belum ada di ADMIN_EMAILS (.env). Tambahkan dulu — jalankan `php artisan config:clear` bila config di-cache.");
+            $this->error("{$email} belum ada di ADMIN_EMAILS (.env). Tambahkan dulu, lalu jalankan `php artisan config:clear` bila config di-cache.");
 
             return self::FAILURE;
         }
 
         $user = User::query()->where('email', $email)->first();
         if ($user !== null && ! $this->confirm("Akun {$email} sudah ada. Reset password-nya, tandai terverifikasi, dan putus semua sesi aktifnya?")) {
-            $this->warn('Dibatalkan — tidak ada yang diubah.');
+            $this->warn('Dibatalkan, tidak ada yang diubah.');
 
             return self::FAILURE;
         }
@@ -80,7 +80,7 @@ class CreateAdmin extends Command
             ? DB::table(config('session.table', 'sessions'))->where('user_id', $user->getKey())->delete()
             : 0;
 
-        $this->info("Akun admin {$email} siap".($sessions > 0 ? " — {$sessions} sesi lama diputus" : '').'. Login di /admin/login.');
+        $this->info("Akun admin {$email} siap".($sessions > 0 ? " ({$sessions} sesi lama diputus)" : '').'. Login di /admin/login.');
 
         return self::SUCCESS;
     }

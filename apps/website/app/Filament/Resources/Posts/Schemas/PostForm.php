@@ -45,7 +45,7 @@ class PostForm
                             ->unique(ignoreRecord: true),
                         Textarea::make('excerpt')
                             ->label('Ringkasan')
-                            ->helperText('Opsional — tampil di kartu daftar dan hasil pencarian. Kosong = diambil dari awal isi.')
+                            ->helperText('Opsional. Tampil di kartu daftar dan menjadi deskripsi tulisan di hasil pencarian Google. Kosong = diambil dari awal isi.')
                             ->rows(3)
                             ->maxLength(300),
                         RichEditor::make('content')
@@ -86,7 +86,7 @@ class PostForm
                     Section::make('Gambar sampul')->schema([
                         FileUpload::make('cover_path')
                             ->hiddenLabel()
-                            ->helperText('Opsional. JPG, PNG, atau WebP — otomatis dipotong 16:9 dan diperkecil ke 1200×675 di browser.')
+                            ->helperText('Opsional. JPG, PNG, atau WebP. Otomatis dipotong 16:9 dan diperkecil ke 1200×675 di browser.')
                             ->image()
                             // Tanpa SVG: SVG bisa memuat script dan dilayani dari domain yang sama.
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
