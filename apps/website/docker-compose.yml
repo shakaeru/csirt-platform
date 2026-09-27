@@ -20,6 +20,15 @@ services:
       PHP_MEMORY_LIMIT: 256M
       PHP_OPCACHE_ENABLE: "1"
       PHP_FPM_PM_MAX_CHILDREN: "8"
+      # Koneksi SQLite persisten + proses PHP-FPM yang tidak berhenti saat idle (`dynamic`, bukan
+      # `ondemand` bawaan image). Tanpa ini, setiap request yang menulis sesi menutup koneksi →
+      # checkpoint WAL + fsync → 1–6 detik per halaman di disk VPS ini (diukur 27 September 2026).
+      # Nilai `environment:` mengalahkan .env.
+      DB_PERSISTENT: "true"
+      PHP_FPM_PM_CONTROL: dynamic
+      PHP_FPM_PM_START_SERVERS: "2"
+      PHP_FPM_PM_MIN_SPARE_SERVERS: "2"
+      PHP_FPM_PM_MAX_SPARE_SERVERS: "4"
       # Healthcheck image memakai route health Laravel (boot aplikasi, bukan hanya ping PHP-FPM).
       HEALTHCHECK_PATH: /up
       # Saat start: config/route/view/event cache (php artisan optimize). Migrasi TIDAK otomatis —
