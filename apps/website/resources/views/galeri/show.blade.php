@@ -39,12 +39,18 @@
                  tautan tetap membuka foto ukuran penuh. --}}
             <div data-gallery class="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4">
                 @foreach ($album->photos as $photo)
+                    {{-- Kotak persegi: 2 kolom < 640 px, 3 kolom, lalu 4 kolom (maks. 303 px), dikali cropFactor()
+                         karena foto dipotong object-cover. Lightbox memakai srcset yang sama (data-pswp-srcset). --}}
+                    @php($f = $photo->cropFactor())
                     <a href="{{ $photo->url }}"
                        data-pswp-width="{{ $photo->width }}" data-pswp-height="{{ $photo->height }}" data-cropped="true"
+                       @if ($photo->srcset) data-pswp-srcset="{{ $photo->srcset }}" @endif
                        @if ($photo->caption) data-caption="{{ $photo->caption }}" @endif
                        class="group block aspect-square overflow-hidden rounded-base bg-csirt-neutral-100 focus:outline-hidden focus:ring-4 focus:ring-csirt-primary-light">
-                        <img src="{{ $photo->thumb_url }}" alt="{{ $photo->caption ?? 'Foto '.$loop->iteration.' dari album '.$album->title }}" loading="lazy"
-                             class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none">
+                        <x-responsive-image :src="$photo->thumb_url" :srcset="$photo->srcset" loading="lazy"
+                                            :alt="$photo->caption ?? 'Foto '.$loop->iteration.' dari album '.$album->title"
+                                            :sizes="'(min-width: 1280px) '.round(303 * $f).'px, (min-width: 1024px) calc((100vw - 68px) / 4 * '.$f.'), (min-width: 640px) calc((100vw - 56px) / 3 * '.$f.'), calc((100vw - 40px) / 2 * '.$f.')'"
+                                            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none" />
                     </a>
                 @endforeach
             </div>

@@ -65,8 +65,11 @@
                 <h2 id="album-{{ $album->id }}" class="text-xl font-bold text-csirt-navy">Dokumentasi: {{ $album->title }}</h2>
                 <div class="mt-4 grid grid-cols-3 gap-2">
                     @foreach ($album->photos as $photo)
+                        {{-- 3 kotak persegi per baris di kolom tulisan (maks. 240 px), dikali cropFactor(). --}}
+                        @php($f = $photo->cropFactor())
                         <a href="{{ route('galeri.show', $album) }}" class="block aspect-square overflow-hidden rounded-base bg-csirt-neutral-100" tabindex="-1" aria-hidden="true">
-                            <img src="{{ $photo->thumb_url }}" alt="" loading="lazy" class="h-full w-full object-cover">
+                            <x-responsive-image :src="$photo->thumb_url" :srcset="$photo->srcset" loading="lazy" class="h-full w-full object-cover"
+                                                :sizes="'(min-width: 768px) '.round(240 * $f).'px, calc((100vw - 48px) / 3 * '.$f.')'" />
                         </a>
                     @endforeach
                 </div>

@@ -10,6 +10,7 @@ use App\Filament\Resources\Albums\RelationManagers\PhotosRelationManager;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\Post;
+use App\Support\Images\ResponsiveVariants;
 use Database\Seeders\DemoGallerySeeder;
 use Filament\Actions\DeleteBulkAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -191,6 +192,7 @@ class GalleryTest extends TestCase
 
         $photos = $album->photos()->ordered()->get();
         $this->assertSame([[2000, 1333], [800, 600]], $photos->map(fn (Photo $photo): array => [$photo->width, $photo->height])->all());
+        $this->assertSame([[400, 800, 1200], [400, 800]], $photos->pluck('variant_widths')->all());
 
         $manager()->call('updateTableColumnState', 'caption', (string) $photos[0]->getKey(), 'Pembukaan pelatihan');
         $this->assertSame('Pembukaan pelatihan', $photos[0]->fresh()->caption);
@@ -264,6 +266,54 @@ class GalleryTest extends TestCase
         $this->artisan('db:seed', ['--class' => DemoGallerySeeder::class, '--force' => true])
             ->expectsOutputToContain('hanya untuk lokal');
         $this->assertSame(0, Album::query()->count());
+    }
+
+    /** Foto 3:2 di kotak persegi: sizes dikali 1.5; lightbox memakai srcset yang sama + JPEG penuh. */
+    public function test_foto_dibuatkan_varian_webp_untuk_grid_kartu_album_dan_lightbox(): void
+    {
+        $album = Album::factory()->create();
+        $disk = Storage::disk(Album::DISK);
+
+        $photo = $album->addPhoto($this->tempFile($this->jpegWithOrientation(2400, 1600, 1)));
+
+        $this->assertSame([400, 800, 1200], $photo->fresh()->variant_widths);
+        foreach ([400 => 267, 800 => 533, 1200 => 800] as $width => $height) {
+            $this->assertSame([$width, $height, IMAGETYPE_WEBP], array_slice(getimagesize($disk->path(ResponsiveVariants::path($photo->path, $width))), 0, 3));
+        }
+
+        $photo->refresh();
+        $srcset = $disk->url(ResponsiveVariants::path($photo->path, 400)).' 400w, '
+            .$disk->url(ResponsiveVariants::path($photo->path, 800)).' 800w, '
+            .$disk->url(ResponsiveVariants::path($photo->path, 1200)).' 1200w, '
+            .$photo->url.' 2000w';
+        $this->assertSame($srcset, $photo->srcset);
+        $this->assertSame(1.5, $photo->cropFactor());
+
+        $this->get('/galeri/'.$album->slug)
+            ->assertSee('data-pswp-srcset="'.$srcset.'"', false)
+            ->assertSee('<source type="image/webp" srcset="'.$srcset.'" sizes="(min-width: 1280px) 455px, (min-width: 1024px) calc((100vw - 68px) / 4 * 1.5),', false)
+            ->assertSee('src="'.$photo->thumb_url.'"', false);
+
+        // Kartu album 4:3: faktor 1.5 / (4/3) = 1.13.
+        $this->get('/galeri')->assertSee('sizes="(min-width: 1280px) 452px, (min-width: 1024px) calc((100vw - 80px) / 3 * 1.13),', false);
+
+        // Foto dihapus: foto penuh, thumbnail, dan variannya ikut hilang.
+        $photo->delete();
+        $this->assertSame([], $disk->allFiles("galeri/{$album->id}"));
+    }
+
+    /** Foto potret: lebarnya pas di kotak persegi (faktor 1); JPEG penuh 1333 px jadi kandidat terbesar. */
+    public function test_foto_potret_tidak_memperbesar_sizes(): void
+    {
+        $album = Album::factory()->create();
+
+        $photo = $album->addPhoto($this->tempFile($this->jpegWithOrientation(1600, 2400, 1)))->fresh();
+
+        $this->assertSame([1333, 2000], [$photo->width, $photo->height]);
+        $this->assertSame([400, 800, 1200], $photo->variant_widths);
+        $this->assertSame(1.0, $photo->cropFactor());
+        $this->assertStringEndsWith($photo->url.' 1333w', $photo->srcset);
+        $this->get('/galeri/'.$album->slug)->assertSee('sizes="(min-width: 1280px) 303px, (min-width: 1024px) calc((100vw - 68px) / 4 * 1),', false);
     }
 
     private function tempFile(string $contents): string
