@@ -1,2 +1,13 @@
+# Semua halaman publik boleh dirayapi. Yang ditutup hanya panel admin dan halaman akun
+# (login/reset password), yang tidak berguna di hasil pencarian.
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /login
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /confirm-password
+Disallow: /dashboard
+Disallow: /profile
+
+Sitemap: https://csirt.pcr.ac.id/sitemap.xml

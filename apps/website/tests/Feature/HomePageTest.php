@@ -10,8 +10,8 @@ class HomePageTest extends TestCase
     {
         $this->get('/')
             ->assertOk()
-            ->assertSee('UKM CSIRT — Politeknik Caltex Riau')
-            ->assertSee('images/csirt-logo.png', false)
+            ->assertSee('UKM CSIRT Politeknik Caltex Riau</h1>', false)
+            ->assertSee('images/csirt-logo.webp', false)
             ->assertSee('data-collapse-toggle="navbar-main"', false)
             ->assertSee('data-animate="navbar"', false);
     }

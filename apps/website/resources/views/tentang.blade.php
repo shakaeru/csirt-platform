@@ -1,7 +1,7 @@
 {{-- Halaman Tentang. Teks visi, misi, dan program kerja dari config/profil.php (juga dipakai Beranda). --}}
 @extends('layouts.app', [
-    'title' => 'Tentang',
-    'description' => 'Sejarah, visi, misi, dan program kerja UKM CSIRT Politeknik Caltex Riau.',
+    'title' => 'Tentang UKM CSIRT',
+    'description' => 'Sejarah UKM CSIRT Politeknik Caltex Riau sejak '.config('profil.tahun_komunitas').', visi dan misi organisasi, serta program kerja periode '.config('profil.periode_program').'.',
 ])
 
 @section('content')
@@ -20,8 +20,8 @@
                 <h2 id="sejarah" class="text-2xl font-bold text-csirt-navy">Sejarah Singkat</h2>
                 <p class="mt-4 text-lg leading-relaxed text-csirt-neutral-900">
                     UKM CSIRT berawal dari komunitas mahasiswa Politeknik Caltex Riau yang tertarik pada keamanan siber sejak {{ $profil['tahun_komunitas'] }},
-                    lalu resmi menjadi Unit Kegiatan Mahasiswa pada {{ $profil['tahun_ukm'] }}. Sejak itu CSIRT menjadi tempat anggotanya belajar bersama,
-                    berbagi pengetahuan, dan berkompetisi di bidang keamanan siber.
+                    lalu resmi menjadi Unit Kegiatan Mahasiswa pada {{ $profil['tahun_ukm'] }}. Sejak itu anggotanya rutin berlatih bersama
+                    dan mengikuti kompetisi keamanan siber seperti Capture The Flag (CTF).
                 </p>
             </div>
             <ol class="space-y-4 border-s-2 border-csirt-secondary ps-6 lg:self-center">
@@ -74,8 +74,8 @@
         </section>
 
         <section aria-labelledby="kenali" class="rounded-base bg-csirt-neutral-100 px-6 py-10 text-center sm:px-10">
-            <h2 id="kenali" class="text-2xl font-bold text-csirt-navy">Kenali kami lebih jauh</h2>
-            <p class="mx-auto mt-2 max-w-xl text-csirt-neutral-600">Lihat siapa saja pengurus periode ini dan capaian anggota di berbagai kompetisi.</p>
+            <h2 id="kenali" class="text-2xl font-bold text-csirt-navy">Pengurus dan prestasi anggota</h2>
+            <p class="mx-auto mt-2 max-w-xl text-csirt-neutral-600">Susunan pengurus periode ini ada di halaman Struktur Organisasi, sedangkan hasil kompetisi anggota dicatat di halaman Prestasi.</p>
             <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
                 <a href="{{ route('struktur-organisasi') }}" class="rounded-base bg-csirt-primary px-5 py-3 font-medium text-csirt-white hover:bg-csirt-primary-lighter focus:outline-hidden focus:ring-4 focus:ring-csirt-primary-light">Struktur Organisasi</a>
                 <a href="{{ route('prestasi') }}" class="rounded-base border border-csirt-primary px-5 py-3 font-medium text-csirt-primary hover:bg-csirt-white focus:outline-hidden focus:ring-4 focus:ring-csirt-primary-light">Prestasi</a>

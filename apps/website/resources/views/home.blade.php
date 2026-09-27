@@ -1,8 +1,12 @@
 {{-- Beranda. Teks visi dan program kerja dari config/profil.php (sumber yang sama dengan halaman Tentang).
-     Teks h1 dicek HomePageTest — jangan diubah tanpa menyesuaikan tesnya. --}}
+     Teks h1 dicek HomePageTest; ubah tesnya juga bila h1 diganti. JSON-LD Organization/WebSite: App\Support\Seo. --}}
 @extends('layouts.app', [
-    'description' => 'UKM CSIRT Politeknik Caltex Riau — wadah mahasiswa untuk belajar, berbagi, dan berkompetisi di bidang keamanan siber.',
+    'description' => 'UKM CSIRT Politeknik Caltex Riau (CSIRT PCR) adalah unit kegiatan mahasiswa bidang keamanan siber. Anggotanya berlatih rutin dan ikut kompetisi Capture The Flag.',
 ])
+
+@push('head')
+    <script type="application/ld+json">{!! \App\Support\Seo::jsonLd(\App\Support\Seo::organizationSchema()) !!}</script>
+@endpush
 
 @section('content')
     @php
@@ -12,11 +16,10 @@
 
     <section class="bg-csirt-neutral-100">
         <div class="mx-auto max-w-screen-xl px-4 py-16 text-center lg:py-24">
-            <h1 class="text-3xl font-extrabold tracking-tight text-csirt-navy md:text-4xl lg:text-5xl">
-                UKM CSIRT — Politeknik Caltex Riau
-            </h1>
+            <h1 class="text-3xl font-extrabold tracking-tight text-csirt-navy md:text-4xl lg:text-5xl">UKM CSIRT Politeknik Caltex Riau</h1>
             <p class="mx-auto mt-4 max-w-2xl text-lg text-csirt-neutral-600 lg:text-xl">
-                Computer Security Incident Response Team: wadah mahasiswa untuk belajar, berbagi, dan berkompetisi di bidang keamanan siber.
+                Computer Security Incident Response Team (CSIRT) adalah unit kegiatan mahasiswa Politeknik Caltex Riau di bidang keamanan siber.
+                Anggotanya belajar lewat pelatihan rutin dan menguji kemampuan di kompetisi Capture The Flag (CTF).
             </p>
             <a href="{{ route('tentang') }}" class="mt-8 inline-block rounded-base bg-csirt-primary px-6 py-3 font-medium text-csirt-white hover:bg-csirt-primary-lighter focus:outline-hidden focus:ring-4 focus:ring-csirt-primary-light">Tentang UKM CSIRT</a>
         </div>
@@ -48,12 +51,21 @@
         </section>
 
         <section aria-labelledby="ikuti" class="rounded-base bg-csirt-neutral-100 px-6 py-10 text-center sm:px-10">
-            <h2 id="ikuti" class="text-2xl font-bold text-csirt-navy">Ikuti kegiatan dan capaian kami</h2>
-            <p class="mx-auto mt-2 max-w-xl text-csirt-neutral-600">Kabar terbaru, dokumentasi kegiatan, dan prestasi anggota di berbagai kompetisi.</p>
+            <h2 id="ikuti" class="text-2xl font-bold text-csirt-navy">Laporan kegiatan dan hasil lomba</h2>
+            <p class="mx-auto mt-2 max-w-xl text-csirt-neutral-600">Setiap kegiatan dilaporkan di Berita beserta foto dokumentasinya. Hasil lomba yang diikuti anggota dicatat di halaman Prestasi.</p>
             <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
                 <a href="{{ route('berita.index') }}" class="rounded-base bg-csirt-primary px-5 py-3 font-medium text-csirt-white hover:bg-csirt-primary-lighter focus:outline-hidden focus:ring-4 focus:ring-csirt-primary-light">Berita &amp; Kegiatan</a>
+                <a href="{{ route('galeri.index') }}" class="rounded-base border border-csirt-primary px-5 py-3 font-medium text-csirt-primary hover:bg-csirt-white focus:outline-hidden focus:ring-4 focus:ring-csirt-primary-light">Galeri</a>
                 <a href="{{ route('prestasi') }}" class="rounded-base border border-csirt-primary px-5 py-3 font-medium text-csirt-primary hover:bg-csirt-white focus:outline-hidden focus:ring-4 focus:ring-csirt-primary-light">Prestasi</a>
             </div>
+        </section>
+
+        <section aria-labelledby="bergabung" class="flex flex-col gap-4 rounded-base border border-csirt-neutral-100 px-6 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-10">
+            <div>
+                <h2 id="bergabung" class="text-2xl font-bold text-csirt-navy">Ingin bergabung?</h2>
+                <p class="mt-1 text-csirt-neutral-600">Status pendaftaran anggota baru dan kontak pengurus ada di halaman Kontak.</p>
+            </div>
+            <a href="{{ route('kontak') }}#pendaftaran" class="shrink-0 rounded-base bg-csirt-primary px-5 py-3 text-center font-medium text-csirt-white hover:bg-csirt-primary-lighter focus:outline-hidden focus:ring-4 focus:ring-csirt-primary-light">Info pendaftaran</a>
         </section>
     </div>
 @endsection

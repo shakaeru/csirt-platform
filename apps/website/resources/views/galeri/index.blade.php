@@ -1,6 +1,7 @@
 @extends('layouts.app', [
     'title' => 'Galeri',
     'description' => 'Dokumentasi foto kegiatan UKM CSIRT Politeknik Caltex Riau.',
+    'page' => $albums->currentPage(),
 ])
 
 @section('content')

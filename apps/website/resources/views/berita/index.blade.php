@@ -1,6 +1,17 @@
+@php
+    // Judul dan deskripsi ikut filter supaya tiap halaman daftar unik. Hasil pencarian tidak diindeks.
+    $filters = array_filter([$category?->name, $tag ? '#'.$tag->name : null]);
+@endphp
 @extends('layouts.app', [
-    'title' => 'Berita & Kegiatan',
-    'description' => 'Berita, kegiatan, dan pengumuman UKM CSIRT Politeknik Caltex Riau.',
+    'title' => 'Berita & Kegiatan'.($filters ? ': '.implode(', ', $filters) : ''),
+    'description' => match (true) {
+        $tag !== null => 'Tulisan UKM CSIRT Politeknik Caltex Riau dengan tag #'.$tag->name.'.',
+        $category !== null => 'Tulisan kategori '.$category->name.' dari UKM CSIRT Politeknik Caltex Riau.',
+        default => 'Laporan kegiatan dan pengumuman terbaru dari UKM CSIRT Politeknik Caltex Riau.',
+    },
+    'page' => $posts->currentPage(),
+    'canonicalQuery' => ['kategori' => $category?->slug, 'tag' => $tag?->slug],
+    'noindex' => $search !== '',
 ])
 
 @section('content')

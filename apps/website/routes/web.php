@@ -5,6 +5,7 @@ use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\OrganizationStructureController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'home')->name('home');
@@ -22,6 +23,8 @@ Route::get('galeri/{album}', [AlbumController::class, 'show'])->name('galeri.sho
 Route::get('prestasi', AchievementController::class)->name('prestasi');
 
 Route::get('kontak', ContactController::class)->name('kontak');
+
+Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
