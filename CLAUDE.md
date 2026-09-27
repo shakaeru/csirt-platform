@@ -46,7 +46,7 @@ Sesi ini kemungkinan dijalankan dari WSL lokal, mengeksekusi perintah ke VPS lew
 
 ## Yang Masih Perlu Dilengkapi
 
-- Struktur repo aplikasi Laravel (monorepo vs repo per app) & konfigurasi panel Filament — tech stack sudah final di `docs/PRD.md` § 4.1–4.2
+- Konfigurasi panel Filament untuk `apps/elearning` (tech stack sudah final di `docs/PRD.md` § 4.2). Struktur repo sudah diputuskan: monorepo (lihat `README.md`)
 - Akun SSH pribadi anggota inti di VPS (GUIDELINES § 4) — belum dibuat; setelah ada, keluarkan `deploy` dari grup `sudo`
 - Strategi backup & rollback untuk `apps/ctfd` sebelum event besar
 - CI/CD (saat ini deployment manual via `git pull` + `docker compose up -d` di VPS)

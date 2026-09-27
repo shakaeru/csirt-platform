@@ -1,6 +1,6 @@
 # csirt-platform
 
-Repositori platform digital UKM CSIRT — Politeknik Caltex Riau: dokumentasi proyek dan infrastruktur bersama (reverse proxy, TLS). Struktur kode aplikasi — tetap di repo ini (monorepo) atau repo terpisah per aplikasi — belum diputuskan (lihat `CLAUDE.md`).
+Repositori platform digital UKM CSIRT Politeknik Caltex Riau. Repo ini berbentuk monorepo: ketiga aplikasi (`apps/website`, `apps/elearning`, `apps/ctfd`), infrastruktur bersama (reverse proxy, TLS), skrip operasional, dan dokumentasi proyek ada di satu repositori. Setiap aplikasi punya folder, `docker-compose.yml`, dan `.env` sendiri, dan berjalan sebagai container terpisah di VPS.
 
 ## Status Layanan
 
