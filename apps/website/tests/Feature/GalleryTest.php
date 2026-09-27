@@ -15,6 +15,7 @@ use Database\Seeders\DemoGallerySeeder;
 use Filament\Actions\DeleteBulkAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Defer\DeferredCallbackCollection;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use Livewire\Livewire;
@@ -179,6 +180,7 @@ class GalleryTest extends TestCase
     public function test_admin_mengunggah_mengubah_keterangan_dan_menghapus_foto(): void
     {
         $this->actingAsAdmin();
+        $this->withoutDefer(); // varian (biasanya setelah respons) dibuat langsung supaya bisa diperiksa
         $album = Album::factory()->draft()->create();
         $manager = fn () => Livewire::test(PhotosRelationManager::class, ['ownerRecord' => $album, 'pageClass' => EditAlbum::class]);
 
@@ -271,6 +273,7 @@ class GalleryTest extends TestCase
     /** Foto 3:2 di kotak persegi: sizes dikali 1.5; lightbox memakai srcset yang sama + JPEG penuh. */
     public function test_foto_dibuatkan_varian_webp_untuk_grid_kartu_album_dan_lightbox(): void
     {
+        $this->withoutDefer();
         $album = Album::factory()->create();
         $disk = Storage::disk(Album::DISK);
 
@@ -305,6 +308,7 @@ class GalleryTest extends TestCase
     /** Foto potret: lebarnya pas di kotak persegi (faktor 1); JPEG penuh 1333 px jadi kandidat terbesar. */
     public function test_foto_potret_tidak_memperbesar_sizes(): void
     {
+        $this->withoutDefer();
         $album = Album::factory()->create();
 
         $photo = $album->addPhoto($this->tempFile($this->jpegWithOrientation(1600, 2400, 1)))->fresh();
@@ -314,6 +318,40 @@ class GalleryTest extends TestCase
         $this->assertSame(1.0, $photo->cropFactor());
         $this->assertStringEndsWith($photo->url.' 1333w', $photo->srcset);
         $this->get('/galeri/'.$album->slug)->assertSee('sizes="(min-width: 1280px) 303px, (min-width: 1024px) calc((100vw - 68px) / 4 * 1),', false);
+    }
+
+    /**
+     * Varian galeri dibuat setelah respons (defer), bukan saat unggah: unggah 30 foto di VPS tidak
+     * boleh ikut menunggu encode WebP. Sampai selesai, halaman memakai thumbnail JPEG.
+     */
+    public function test_varian_foto_dibuat_setelah_respons_dan_file_tetap_bersih(): void
+    {
+        $album = Album::factory()->create();
+        $disk = Storage::disk(Album::DISK);
+
+        $photo = $album->addPhoto($this->tempFile($this->jpegWithOrientation(2400, 1600, 1)));
+        $removed = $album->addPhoto($this->tempFile($this->jpegWithOrientation(800, 600, 1)));
+
+        $this->assertNull($photo->fresh()->variant_widths);
+        $this->assertFalse($disk->exists(ResponsiveVariants::path($photo->path, 400)));
+        $this->assertCount(2, app(DeferredCallbackCollection::class));
+
+        // Foto kedua dihapus sebelum gilirannya: callback-nya dilewati tanpa error.
+        $removed->delete();
+
+        // Halaman dirender sebelum varian ada (JPEG saja); antrean defer jalan setelah respons.
+        $this->get('/galeri/'.$album->slug)
+            ->assertOk()
+            ->assertSee('src="'.$photo->thumb_url.'"', false)
+            ->assertDontSee('data-pswp-srcset', false);
+
+        $this->assertSame([400, 800, 1200], $photo->fresh()->variant_widths);
+        $this->assertTrue($disk->exists(ResponsiveVariants::path($photo->path, 1200)));
+        $this->assertCount(5, $disk->allFiles("galeri/{$album->id}")); // foto, thumbnail, 3 varian
+
+        // Model di memori basi (variant_widths masih null): varian tetap ikut terhapus.
+        $photo->delete();
+        $this->assertSame([], $disk->allFiles("galeri/{$album->id}"));
     }
 
     private function tempFile(string $contents): string

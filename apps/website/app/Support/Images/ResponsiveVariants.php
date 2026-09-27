@@ -54,13 +54,19 @@ final class ResponsiveVariants
     }
 
     /**
-     * @param  list<int>|null  $widths
+     * Hapus semua varian milik $path (<nama>-<lebar>.webp di folder yang sama). Dicari dari nama
+     * file, bukan dari daftar lebar tersimpan, supaya tetap bersih walaupun model di memori basi
+     * (mis. varian dibuat belakangan lewat defer, lalu model lama yang dihapus).
      */
-    public function delete(string $disk, string $path, ?array $widths): void
+    public function delete(string $disk, string $path): void
     {
-        if ($widths) {
-            Storage::disk($disk)->delete(array_map(fn (int $width): string => self::path($path, $width), $widths));
-        }
+        $storage = Storage::disk($disk);
+        $pattern = '/^'.preg_quote(pathinfo($path, PATHINFO_FILENAME), '/').'-\d+\.webp$/';
+
+        $storage->delete(array_values(array_filter(
+            $storage->files(dirname($path)),
+            fn (string $file): bool => preg_match($pattern, basename($file)) === 1,
+        )));
     }
 
     /**
