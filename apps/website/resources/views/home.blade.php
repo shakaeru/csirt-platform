@@ -14,20 +14,23 @@
         $unggulan = collect($profil['program_kerja'])->where('unggulan', true)->take(3);
     @endphp
 
+    {{-- Hero rata kiri (bukan hero tengah khas template). H1 memakai font tampilan (--font-display). --}}
     <section class="bg-csirt-neutral-100">
-        <div class="mx-auto max-w-screen-xl px-4 py-16 text-center lg:py-24">
-            <h1 class="text-3xl font-extrabold tracking-tight text-csirt-navy md:text-4xl lg:text-5xl">UKM CSIRT Politeknik Caltex Riau</h1>
-            <p class="mx-auto mt-4 max-w-2xl text-lg text-csirt-neutral-600 lg:text-xl">
-                Computer Security Incident Response Team (CSIRT) adalah unit kegiatan mahasiswa Politeknik Caltex Riau di bidang keamanan siber.
-                Anggotanya belajar lewat pelatihan rutin dan menguji kemampuan di kompetisi Capture The Flag (CTF).
-            </p>
-            <a href="{{ route('tentang') }}" class="mt-8 inline-block rounded-base bg-csirt-primary px-6 py-3 font-medium text-csirt-white hover:bg-csirt-primary-lighter focus:outline-hidden focus:ring-4 focus:ring-csirt-primary-light">Tentang UKM CSIRT</a>
+        <div class="mx-auto max-w-screen-xl px-4 py-14 lg:py-20">
+            <div class="max-w-2xl">
+                <h1 class="text-4xl font-bold leading-[1.05] text-csirt-navy sm:text-5xl lg:text-6xl">UKM CSIRT Politeknik Caltex Riau</h1>
+                <p class="mt-5 text-lg text-csirt-neutral-600 lg:text-xl">
+                    Computer Security Incident Response Team (CSIRT) adalah unit kegiatan mahasiswa Politeknik Caltex Riau di bidang keamanan siber.
+                    Anggotanya belajar lewat pelatihan rutin dan menguji kemampuan di kompetisi Capture The Flag (CTF).
+                </p>
+                <a href="{{ route('tentang') }}" class="mt-8 inline-block rounded-base bg-csirt-primary px-6 py-3 font-medium text-csirt-white hover:bg-csirt-primary-lighter focus:outline-hidden focus:ring-4 focus:ring-csirt-primary-light">Tentang UKM CSIRT</a>
+            </div>
         </div>
     </section>
 
     <div class="mx-auto max-w-screen-xl space-y-16 px-4 py-12 lg:space-y-20 lg:py-16">
         <section aria-labelledby="visi" class="rounded-base bg-csirt-navy px-6 py-10 sm:px-10 lg:py-14">
-            <h2 id="visi" class="text-sm font-semibold uppercase tracking-wider text-csirt-accent-lime">Visi</h2>
+            <h2 id="visi" class="text-sm font-semibold text-csirt-accent-lime">Visi</h2>
             <p class="mt-4 max-w-4xl text-xl leading-relaxed text-csirt-white lg:text-2xl">{{ $profil['visi'] }}</p>
             <a href="{{ route('tentang') }}#visi-misi" class="mt-6 inline-block font-medium text-csirt-accent-lime hover:underline">Baca visi &amp; misi lengkap →</a>
         </section>
