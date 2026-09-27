@@ -3,12 +3,13 @@
 use App\Http\Controllers\AchievementController;
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrganizationStructureController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'home')->name('home');
+Route::get('/', HomeController::class)->name('home');
 
 Route::view('tentang', 'tentang')->name('tentang');
 

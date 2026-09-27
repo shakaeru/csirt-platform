@@ -2,9 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Models\Album;
 use DOMDocument;
 use DOMXPath;
 use Filament\Facades\Filament;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
+use Tests\Concerns\CreatesTestImages;
 use Tests\TestCase;
 
 /**
@@ -13,6 +17,8 @@ use Tests\TestCase;
  */
 class GayaLandingPageTest extends TestCase
 {
+    use CreatesTestImages, RefreshDatabase;
+
     private const SLOP_FONTS = '/\b(Inter|Geist|Space Grotesk)\b/i';
 
     public function test_font_stack_tidak_memakai_font_bawaan_template_ai(): void
@@ -34,7 +40,13 @@ class GayaLandingPageTest extends TestCase
 
     public function test_hero_beranda_rata_kiri_dan_tanpa_label_huruf_kapital(): void
     {
-        $html = $this->get('/')->assertOk()->getContent();
+        // Dengan jumbotron foto album (tugas 3) supaya layout dua kolomnya ikut diperiksa.
+        Storage::fake(Album::DISK);
+        $path = tempnam(sys_get_temp_dir(), 'gaya-test-');
+        file_put_contents($path, $this->plainJpeg(1200, 800));
+        Album::factory()->create()->addPhoto($path);
+
+        $html = $this->get('/')->assertOk()->assertSee('<figure>', false)->getContent();
         $dom = new DOMDocument;
         libxml_use_internal_errors(true);
         $dom->loadHTML('<?xml encoding="UTF-8">'.$html);

@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /** Halaman Tentang dan isi Beranda — teksnya dari config/profil.php. */
 class TentangBerandaTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_halaman_tentang_berisi_sejarah_visi_misi_dan_program_kerja(): void
     {
         $profil = config('profil');
