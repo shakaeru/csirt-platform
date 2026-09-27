@@ -4,7 +4,10 @@
 <article id="prestasi-{{ $achievement->id }}" {{ $attributes->class(['flex scroll-mt-28 flex-col overflow-hidden rounded-base border border-csirt-neutral-100 bg-csirt-white sm:flex-row']) }}>
     @if ($achievement->photo_url)
         <div class="aspect-video bg-csirt-navy sm:aspect-auto sm:w-56 sm:shrink-0">
-            <img src="{{ $achievement->photo_url }}" alt="" width="1200" height="675" loading="lazy" class="h-full w-full object-cover">
+            {{-- < 640 px: foto selebar kartu. ≥ 640 px: kolom 224 px (sm:w-56) setinggi kartu dan dipotong
+                 object-cover, jadi lebar gambar yang tampil bisa ±400 px pada kartu yang tinggi. --}}
+            <x-responsive-image :src="$achievement->photo_url" :srcset="$achievement->photo_srcset" width="1200" height="675" loading="lazy"
+                                class="h-full w-full object-cover" sizes="(min-width: 640px) 400px, calc(100vw - 32px)" />
         </div>
     @endif
     <div class="flex flex-1 flex-col p-5">

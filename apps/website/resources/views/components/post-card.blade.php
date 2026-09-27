@@ -5,8 +5,8 @@
     <a href="{{ route('berita.show', $post) }}" class="block aspect-video bg-csirt-navy" tabindex="-1" aria-hidden="true">
         @if ($post->cover_url)
             {{-- sizes mengikuti grid di berita/index: 1 kolom < 640 px, 2 kolom, lalu 3 kolom (maks. 400 px). --}}
-            <x-post-cover :post="$post" loading="lazy" class="h-full w-full object-cover"
-                          sizes="(min-width: 1280px) 400px, (min-width: 1024px) calc((100vw - 80px) / 3), (min-width: 640px) calc((100vw - 56px) / 2), calc(100vw - 32px)" />
+            <x-responsive-image :src="$post->cover_url" :srcset="$post->cover_srcset" width="1200" height="675" loading="lazy" class="h-full w-full object-cover"
+                                sizes="(min-width: 1280px) 400px, (min-width: 1024px) calc((100vw - 80px) / 3), (min-width: 640px) calc((100vw - 56px) / 2), calc(100vw - 32px)" />
         @else
             <span class="flex h-full items-center justify-center text-lg font-semibold text-csirt-white/80">{{ $post->category->name }}</span>
         @endif
