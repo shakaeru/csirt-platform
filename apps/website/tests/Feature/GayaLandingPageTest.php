@@ -38,6 +38,17 @@ class GayaLandingPageTest extends TestCase
         }
     }
 
+    /** Filament core selalu mendaftarkan font Inter; AssetManagerWithoutInter menyaringnya. */
+    public function test_panel_admin_tidak_memasang_font_inter(): void
+    {
+        $html = $this->get('/admin/login')->assertOk()->getContent();
+
+        $this->assertStringNotContainsString('fonts/filament/filament/inter', $html);
+        $this->assertDoesNotMatchRegularExpression(self::SLOP_FONTS, $html);
+        $this->assertStringContainsString("--font-family: 'Segoe UI'", $html);
+        $this->assertStringContainsString('css/filament/filament/app.css', $html, 'tema Filament tetap dimuat');
+    }
+
     public function test_hero_beranda_rata_kiri_dan_tanpa_label_huruf_kapital(): void
     {
         // Dengan jumbotron foto album (tugas 3) supaya layout dua kolomnya ikut diperiksa.
