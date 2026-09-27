@@ -48,6 +48,7 @@ Tanpa `npm run dev`, halaman memakai hasil `npm run build` terakhir.
 | Halaman | Alamat |
 |---|---|
 | Beranda | http://localhost:8000/ |
+| Tentang | http://localhost:8000/tentang |
 | Struktur Organisasi | http://localhost:8000/struktur-organisasi |
 | Berita & Kegiatan | http://localhost:8000/berita |
 | Galeri | http://localhost:8000/galeri |
