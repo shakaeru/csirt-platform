@@ -153,7 +153,7 @@ class ManageContact extends Page
 
         Notification::make()
             ->success()
-            ->title('Tersimpan — halaman Kontak sudah diperbarui')
+            ->title('Tersimpan. Halaman Kontak sudah diperbarui.')
             ->send();
     }
 }

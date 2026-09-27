@@ -24,7 +24,7 @@ class DemoAchievementSeeder extends Seeder
     public function run(): void
     {
         if (app()->isProduction()) {
-            $this->command->error('DemoAchievementSeeder hanya untuk lokal — dibatalkan di production.');
+            $this->command->error('DemoAchievementSeeder hanya untuk lokal, dibatalkan di production.');
 
             return;
         }

@@ -45,13 +45,13 @@ class AlbumsTable
                     ->sortable(),
                 TextColumn::make('post.title')
                     ->label('Tulisan terkait')
-                    ->placeholder('—')
+                    ->placeholder('-')
                     ->limit(40)
                     ->toggleable(),
                 TextColumn::make('published_at')
                     ->label('Terbit pada')
                     ->dateTime('j M Y, H:i')
-                    ->placeholder('—')
+                    ->placeholder('-')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

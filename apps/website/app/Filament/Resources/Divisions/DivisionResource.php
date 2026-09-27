@@ -43,7 +43,7 @@ class DivisionResource extends Resource
                     ->unique(ignoreRecord: true),
                 Textarea::make('description')
                     ->label('Deskripsi')
-                    ->helperText('Opsional — tampil di bawah nama divisi di halaman Struktur Organisasi.')
+                    ->helperText('Opsional, tampil di bawah nama divisi di halaman Struktur Organisasi.')
                     ->rows(3),
                 TextInput::make('sort_order')
                     ->label('Urutan')
@@ -67,7 +67,7 @@ class DivisionResource extends Resource
                 TextColumn::make('description')
                     ->label('Deskripsi')
                     ->limit(60)
-                    ->placeholder('—'),
+                    ->placeholder('-'),
                 TextColumn::make('members_count')
                     ->label('Jumlah pengurus')
                     ->counts('members'),

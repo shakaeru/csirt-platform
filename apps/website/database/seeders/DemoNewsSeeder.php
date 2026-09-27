@@ -24,7 +24,7 @@ class DemoNewsSeeder extends Seeder
     public function run(): void
     {
         if (app()->isProduction()) {
-            $this->command->error('DemoNewsSeeder hanya untuk lokal — dibatalkan di production.');
+            $this->command->error('DemoNewsSeeder hanya untuk lokal, dibatalkan di production.');
 
             return;
         }

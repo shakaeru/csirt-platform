@@ -51,7 +51,7 @@ class AlbumForm
                             ->maxLength(1000),
                         Select::make('post_id')
                             ->label('Tulisan terkait')
-                            ->helperText('Opsional. Album tampil di halaman tulisan itu, dan album menautkan balik ke tulisannya — masing-masing hanya setelah terbit.')
+                            ->helperText('Opsional. Album tampil di halaman tulisan itu, dan album menautkan balik ke tulisannya. Keduanya hanya tampil setelah terbit.')
                             ->relationship('post', 'title', fn ($query) => $query->latest())
                             ->searchable()
                             ->preload(),
@@ -66,7 +66,7 @@ class AlbumForm
                         ->required(),
                     DateTimePicker::make('published_at')
                         ->label('Terbit pada (WIB)')
-                        ->helperText('Kosong = draft (tidak tampil) — unggah foto dulu, baru isi. Masa depan = terjadwal.')
+                        ->helperText('Kosong = draft (tidak tampil). Unggah foto dulu, baru isi. Masa depan = terjadwal.')
                         ->seconds(false),
                 ])->columnSpan(1),
             ]);

@@ -40,7 +40,7 @@ class PostsTable
                 TextColumn::make('published_at')
                     ->label('Terbit pada')
                     ->dateTime('j M Y, H:i')
-                    ->placeholder('—')
+                    ->placeholder('-')
                     ->sortable(),
                 TextColumn::make('updated_at')
                     ->label('Diubah')

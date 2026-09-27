@@ -116,7 +116,7 @@ class BoardMemberResource extends Resource
                     ->badge(),
                 TextColumn::make('division.name')
                     ->label('Divisi')
-                    ->placeholder('—'),
+                    ->placeholder('-'),
                 TextColumn::make('period.name')
                     ->label('Periode')
                     ->sortable(),

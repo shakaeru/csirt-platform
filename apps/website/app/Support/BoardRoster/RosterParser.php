@@ -74,7 +74,7 @@ final class RosterParser
                 [$name, $position] = $member;
                 $slug = Str::slug($name);
                 if (isset($lineOfSlug[$slug])) {
-                    throw new InvalidArgumentException("Baris {$number}: \"{$name}\" sama dengan nama di baris {$lineOfSlug[$slug]} — nama harus unik dalam satu periode.");
+                    throw new InvalidArgumentException("Baris {$number}: \"{$name}\" sama dengan nama di baris {$lineOfSlug[$slug]}. Nama harus unik dalam satu periode.");
                 }
                 $lineOfSlug[$slug] = $number;
 
@@ -91,7 +91,7 @@ final class RosterParser
                 continue;
             }
 
-            throw new InvalidArgumentException("Baris {$number} tidak dikenali (format anggota: \"Nama — Jabatan\"): {$line}");
+            throw new InvalidArgumentException("Baris {$number} tidak dikenali (format anggota: \"Nama - Jabatan\"): {$line}");
         }
 
         if ($period === null) {
@@ -117,7 +117,7 @@ final class RosterParser
             $normalized === 'presidium' => [BoardSection::Presidium, null],
             in_array($normalized, ['pengurus inti', 'inti'], true) => [BoardSection::Inti, null],
             str_starts_with($normalized, 'divisi ') => [BoardSection::Divisi, $header],
-            default => throw new InvalidArgumentException("Baris {$number}: bagian \"{$header}\" tidak dikenal — gunakan Pembina, Presidium, Pengurus Inti, atau Divisi <nama>."),
+            default => throw new InvalidArgumentException("Baris {$number}: bagian \"{$header}\" tidak dikenal. Gunakan Pembina, Presidium, Pengurus Inti, atau Divisi <nama>."),
         };
     }
 
